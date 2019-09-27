@@ -1,0 +1,32 @@
+﻿<Window x:Class="Questionnaire.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Questionnaire"
+        mc:Ignorable="d"
+        Title="Опросник" Height="450" Width="800" Closing="Window_Closing" >
+
+
+
+
+    <Grid>
+        
+        
+
+        <Border>
+            <local:Buttons_Menu x:Name="Butt_Menu" Visibility="Visible"/>
+
+        </Border>
+        <Border>
+            <local:Question_Page x:Name="question_Page"  Visibility="Hidden"/>
+
+        </Border>
+        <!--<Border>
+            <Label x:Name="label" Content="Label"/>
+        </Border>-->
+
+
+
+    </Grid>
+</Window>

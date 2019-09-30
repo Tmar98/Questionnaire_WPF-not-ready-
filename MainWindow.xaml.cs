@@ -27,17 +27,16 @@ namespace Questionnaire
         public Schools schools;
         private SqlConnection connection;
         const bool useMARS = false;
-        private int test_Number;
+        private int test_Number=0;
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += MainWindow_Loaded;
             Connection();
-            
-            
         }
 
-
+        /// <summary>
+        /// Подключение к базе данных
+        /// </summary>
         private async void Connection()
         {
             
@@ -45,73 +44,46 @@ namespace Questionnaire
             connection = new SqlConnection(path + (useMARS ? ";MultipleActiveResultSets=True" : String.Empty));
             
                 await connection.OpenAsync();
-
-          
         }
-        
-        public DataTable  Login_Data_Load()
+
+
+        /// <summary>
+        /// Считывание школ и класов из бд
+        /// </summary>
+        /// <returns></returns>
+        public Tuple<Schools, Klasses> Login_Data_Load()
         {
             var commandread_School = new SqlCommand("select * from Schools", connection);
-            var table = new DataTable();
-            using (var reader_School = commandread_School.ExecuteReader())
-            {
-                
-                table.Columns.Add("Id");
-                table.Columns.Add("School_Number");
-                while (reader_School.Read())
-                {
-                    var row = table.NewRow();
+            var reader_School = commandread_School.ExecuteReader();
+            Schools schools = new Schools(reader_School);
+            reader_School.Close();
 
-                    row["Id"] = Int32.Parse(reader_School["ID"].ToString());
-                    row["School_Number"] = reader_School["School_Number"].ToString();
-                    table.Rows.Add(row);
-                }
-
-            }
-
-            
-
-
-
-            return table;
-
-            
-        }
-        public SqlDataReader Log()
-        {
             var commandread_Class = new SqlCommand("select * from Classes", connection);
             var reader_Class = commandread_Class.ExecuteReader();
-            return reader_Class;
+            Klasses klasses = new Klasses(reader_Class);
+            reader_Class.Close();
+
+            var tuple = new Tuple<Schools, Klasses>(schools,klasses );
+
+
+            return tuple;//переменная хранящая list<школ>,list<класов>
         }
 
-
-        //public Tuple<Schools,SqlDataReader> Login_Data_Load()
-        //{
-        //    var commandread_School = new SqlCommand("select * from Schools", connection);
-        //    var reader_School = commandread_School.ExecuteReader();
-        //    Schools schools = new Schools(reader_School);
-        //    var commandread_Class = new SqlCommand("select * from Classes", connection);
-        //    var reader_Class = commandread_Class.ExecuteReader();
-
-        //    var tuple = new Tuple<Schools, SqlDataReader>(schools, reader_Class);
-        //    return tuple;
-        //}
-
+        /// <summary>
+        /// Считование вопросов из бд
+        /// </summary>
+        /// <returns></returns>
         public Tuple< SqlDataReader,int> Test1_Questions()
         {
+            test_Number = 1;
             var commandread = new SqlCommand("select Question_Text from EGE_Questions", connection);
             var reader = commandread.ExecuteReader();
             var tuple = new Tuple<SqlDataReader, int>(reader, test_Number);
             return tuple;
         }
+        
 
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            
-            
-            
-            
-        }
+        
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = Win_closing;

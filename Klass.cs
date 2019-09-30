@@ -10,9 +10,9 @@ namespace Questionnaire
 {
     public class Klass
     {
-        public int Id;
-        public int Id_School;
-        public string Klass_Name;
+        public int Id{ get; set; }
+        public int Id_School { get; set; }
+        public string Klass_Name { get; set; }
 
         public Klass(int id, int id_School, string klass_Name)
         {
@@ -29,6 +29,7 @@ namespace Questionnaire
                 Klass klass = new Klass(Int32.Parse(reader["ID"].ToString()), Int32.Parse(reader["Id_School"].ToString()), reader["Class_Name"].ToString());
                 this.Add(klass);
             }
+            reader.Close();
         }
     }
 }

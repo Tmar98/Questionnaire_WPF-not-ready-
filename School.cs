@@ -10,8 +10,10 @@ namespace Questionnaire
 {
     public class School
     {
-        public int Id;
-        public string School_Number;
+        public int Id { get; set; }
+        public string School_Number { get; set; }
+
+
         public School(int id, string school_number)
         {
             Id = id; School_Number = school_number;
@@ -28,6 +30,7 @@ namespace Questionnaire
                 School school = new School(Int32.Parse(reader["ID"].ToString()), reader["School_Number"].ToString());
                 this.Add(school);
             }
+            reader.Close();
         }
     }
 }

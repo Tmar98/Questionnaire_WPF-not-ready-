@@ -36,7 +36,7 @@ namespace Questionnaire
             question_Lable.Style = this.Resources["lab2"] as Style;
             QuestionArea.Text = reader["Question_Text"].ToString();
             question_Lable.Style = this.Resources["lab3"] as Style;
-
+            reader.Close();
 
 
         }

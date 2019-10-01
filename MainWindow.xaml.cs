@@ -27,7 +27,7 @@ namespace Questionnaire
         public Schools schools;
         private SqlConnection connection;
         const bool useMARS = false;
-        private int test_Number=0;
+        private int test_Number = 0;
         public MainWindow()
         {
             InitializeComponent();
@@ -39,11 +39,18 @@ namespace Questionnaire
         /// </summary>
         private async void Connection()
         {
-            
-            var path = @"Data Source = DESKTOP-JH3BOL4\SQLEXPRESS;Initial Catalog=Questionare_DB;Integrated Security=True";
-            connection = new SqlConnection(path + (useMARS ? ";MultipleActiveResultSets=True" : String.Empty));
-            
+            try
+            {
+                var path = @"Data Source = DESKTOP-JH3BOL4\SQLEXPRESS;Initial Catalog=Questionare_DB;Integrated Security=True";
+                connection = new SqlConnection(path + (useMARS ? ";MultipleActiveResultSets=True" : String.Empty));
+
                 await connection.OpenAsync();
+            }
+            catch
+            {
+
+            }
+
         }
 
 
@@ -63,7 +70,7 @@ namespace Questionnaire
             Klasses klasses = new Klasses(reader_Class);
             reader_Class.Close();
 
-            var tuple = new Tuple<Schools, Klasses>(schools,klasses );
+            var tuple = new Tuple<Schools, Klasses>(schools, klasses);
 
 
             return tuple;//переменная хранящая list<школ>,list<класов>
@@ -73,16 +80,37 @@ namespace Questionnaire
         /// Считование вопросов из бд
         /// </summary>
         /// <returns></returns>
-        public Tuple< SqlDataReader,int> Test1_Questions()
+        public Tuple<Queue<string>, int> Test1_Questions()
         {
             test_Number = 1;
             var commandread = new SqlCommand("select Question_Text from EGE_Questions", connection);
             var reader = commandread.ExecuteReader();
-            var tuple = new Tuple<SqlDataReader, int>(reader, test_Number);
+            var list_Questions = new List<string>();
+            Queue<string> queue_Questions = new Queue<string>();
+            while (reader.Read())
+            {
+                queue_Questions.Enqueue(reader["Question_Text"].ToString());
+            }
+            reader.Close();
+            var tuple = new Tuple<Queue<string>, int>(queue_Questions, test_Number);
             return tuple;
         }
-        
 
+        public void Insert_Person(string fio,int id_school,int id_class )
+        {
+            try
+            {
+                var insert_Command = new SqlCommand("insert into [Children]([FIO],[Id_School],[Id_Class]) values(@fio,@id_School,@id_Class)", connection);
+                insert_Command.Parameters.AddWithValue("@fio",fio);
+                insert_Command.Parameters.AddWithValue("@id_School", id_school);
+                insert_Command.Parameters.AddWithValue("@id_Class", id_class);
+                insert_Command.ExecuteNonQuery();
+            }
+            catch(SqlException e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
         
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

@@ -8,13 +8,14 @@
              d:DesignHeight="450" d:DesignWidth="800" IsVisibleChanged="UserControl_IsVisibleChanged">
 
     <UserControl.Resources>
-        <Style TargetType="Button">
+        <Style TargetType="Button" >
             <Setter Property="Control.HorizontalAlignment" Value="Center"/>
             <Setter Property="Control.VerticalAlignment" Value="Center"/>
             <Setter Property="Control.Width" Value="120"/>
             <Setter Property="Control.Height" Value="50"/>
         </Style>
 
+        
         <Style x:Key="lab" >
             <Setter Property="Control.FontSize" Value="20"/>
             <Setter Property="Control.BorderBrush" Value="Red"/>
@@ -54,20 +55,20 @@
         </Label>
 
 
-        <Button Grid.Row="1"  x:Name="button"  >
-            <Label x:Name="Butt1"></Label>
+        <Button Grid.Row="1"  x:Name="button1" Click="Button1_Click"  >
+            <Label x:Name="label1"></Label>
         </Button>
-        <Button Grid.Row="1" Grid.Column="1" x:Name="button1"  >
-            <Label x:Name="Butt2"></Label>
+        <Button Grid.Row="1" Grid.Column="1" x:Name="button2"  >
+            <Label x:Name="label2"></Label>
         </Button>
-        <Button Grid.Row="1" Grid.Column="2" x:Name="button2"  >
-            <Label x:Name="Butt3"></Label>
+        <Button Grid.Row="1" Grid.Column="2" x:Name="button3"  >
+            <Label x:Name="label3"></Label>
         </Button>
-        <Button Grid.Row="1" Grid.Column="3" x:Name="button3" >
-            <Label x:Name="Butt4"></Label>
+        <Button Grid.Row="1" Grid.Column="3" x:Name="button4" >
+            <Label x:Name="label4"></Label>
         </Button>
-        <Button Grid.Row="1" Grid.Column="4" x:Name="button4"  >
-            <Label x:Name="Butt5"></Label>
+        <Button Grid.Row="1" Grid.Column="4" x:Name="button5"  >
+            <Label x:Name="label5"></Label>
         </Button>
     </Grid>
 </UserControl>

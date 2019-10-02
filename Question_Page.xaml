@@ -12,7 +12,7 @@
             <Setter Property="Control.HorizontalAlignment" Value="Center"/>
             <Setter Property="Control.VerticalAlignment" Value="Center"/>
             <Setter Property="Control.Width" Value="120"/>
-            <Setter Property="Control.Height" Value="50"/>
+            <Setter Property="Control.Height" Value="75"/>
         </Style>
 
         
@@ -23,15 +23,9 @@
             <Setter Property="Control.Margin" Value="0,40,0,0"/>
             
         </Style>
-        
-        <Style x:Key="lab2" >
-            <Setter Property="Control.FontSize" Value="20"/>
-            <Setter Property="Control.BorderBrush" Value="Aqua"/>
-            <Setter Property="Control.BorderThickness" Value="3"/>
-        </Style>
 
-        <Style x:Key="lab3" BasedOn="{StaticResource lab2}">
-            <Setter Property="Control.FontSize" Value="30"/>
+        <Style x:Key="butText">
+            <Setter Property="Control.FontSize" Value="16"/>
         </Style>
         
     </UserControl.Resources>
@@ -56,19 +50,19 @@
 
 
         <Button Grid.Row="1"  x:Name="button1" Click="Button1_Click"  >
-            <Label x:Name="label1"></Label>
+            <TextBlock x:Name="textBlock1" TextWrapping="Wrap" Style="{StaticResource butText}"></TextBlock>
         </Button>
-        <Button Grid.Row="1" Grid.Column="1" x:Name="button2"  >
-            <Label x:Name="label2"></Label>
+        <Button Grid.Row="1" Grid.Column="1" x:Name="button2" Click="Button2_Click"  >
+            <TextBlock x:Name="textBlock2" TextWrapping="Wrap" Style="{StaticResource butText}"></TextBlock>
         </Button>
-        <Button Grid.Row="1" Grid.Column="2" x:Name="button3"  >
-            <Label x:Name="label3"></Label>
+        <Button Grid.Row="1" Grid.Column="2" x:Name="button3" Click="Button3_Click"  >
+            <TextBlock x:Name="textBlock3" TextWrapping="Wrap" Style="{StaticResource butText}"></TextBlock>
         </Button>
-        <Button Grid.Row="1" Grid.Column="3" x:Name="button4" >
-            <Label x:Name="label4"></Label>
+        <Button Grid.Row="1" Grid.Column="3" x:Name="button4" Click="Button4_Click" >
+            <TextBlock x:Name="textBlock4" TextWrapping="Wrap" Style="{StaticResource butText}"></TextBlock>
         </Button>
-        <Button Grid.Row="1" Grid.Column="4" x:Name="button5"  >
-            <Label x:Name="label5"></Label>
+        <Button Grid.Row="1" Grid.Column="4" x:Name="button5" Click="Button5_Click"  >
+            <TextBlock x:Name="textBlock5" TextWrapping="Wrap" Style="{StaticResource butText}"></TextBlock>
         </Button>
     </Grid>
 </UserControl>

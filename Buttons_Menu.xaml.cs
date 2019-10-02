@@ -35,5 +35,11 @@ namespace Questionnaire
             mW.Butt_Menu.Visibility = Visibility.Hidden;
             mW.Win_closing = true;
         }
+
+        private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            MainWindow mW = (MainWindow)Application.Current.MainWindow;
+            mW.Win_closing = false;
+        }
     }
 }

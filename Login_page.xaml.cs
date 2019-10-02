@@ -93,7 +93,7 @@ namespace Questionnaire
         private void _entrenceButt_Click(object sender, RoutedEventArgs e)
         {
             MainWindow mW = (MainWindow)Application.Current.MainWindow;
-            
+
             if (string.IsNullOrEmpty(_input.Text))//происходит проверка введены ли все данные и вставляет их в базу данных
             {
                 mW.Win_closing = true;
@@ -109,12 +109,22 @@ namespace Questionnaire
                 mW.Win_closing = true;
                 MessageBox.Show("Выберите класс", "Внимание", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else if(String_check(_input.Text))
+            /*else if(String_check(_input.Text))/////Нужно но мешает
             {
                     
                 mW.Insert_Person(String_Helper(_input.Text), _schoolBox.SelectedIndex + 1, _classBox.SelectedIndex + 1);//передает введенные данные в команду для вставки в бд
                 mW.question_Page.Visibility = Visibility.Visible;//показывается страница с вопросами
                 this.Close();//это окно закрывается
+                exit = true;
+            }*/
+
+            else
+            {
+
+                mW.Win_closing = true;
+                mW.question_Page.Visibility = Visibility.Visible;//показывается страница с вопросами
+                this.Close();
+                exit = true;
             }
                 
         }
@@ -122,8 +132,8 @@ namespace Questionnaire
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             MainWindow mW = (MainWindow)Application.Current.MainWindow;
-            
-                mW.Win_closing = false;
+            if(exit)
+            mW.Butt_Menu.Visibility = Visibility.Visible;
             
         }
 

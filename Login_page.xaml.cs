@@ -99,6 +99,10 @@ namespace Questionnaire
                 mW.Win_closing = true;
                 MessageBox.Show("Введите имя", "Внимание", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+            else if (Convert.ToInt32( _input.Text) ==1234)
+            {
+
+            }
             else if (string.IsNullOrEmpty(_schoolBox.Text))
             {
                 mW.Win_closing = true;
@@ -109,34 +113,18 @@ namespace Questionnaire
                 mW.Win_closing = true;
                 MessageBox.Show("Выберите класс", "Внимание", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            /*else if(String_check(_input.Text))/////Нужно но мешает
+            else if(String_check(_input.Text))/////Нужно но мешает
             {
-                    
+                mW.Win_closing = true;
                 mW.Insert_Person(String_Helper(_input.Text), _schoolBox.SelectedIndex + 1, _classBox.SelectedIndex + 1);//передает введенные данные в команду для вставки в бд
                 mW.question_Page.Visibility = Visibility.Visible;//показывается страница с вопросами
                 this.Close();//это окно закрывается
                 exit = true;
-            }*/
-
-            else
-            {
-
-                mW.Win_closing = true;
-                mW.question_Page.Visibility = Visibility.Visible;//показывается страница с вопросами
-                this.Close();
-                exit = true;
             }
-                
+     
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            MainWindow mW = (MainWindow)Application.Current.MainWindow;
-            if(exit)
-            mW.Butt_Menu.Visibility = Visibility.Visible;
-            
-        }
-
+        
         /// <summary>
         /// проверка на количество введеной информации в ФИО
         /// </summary>
@@ -146,15 +134,22 @@ namespace Questionnaire
         {
             bool fio = false;
             string[] str = text.Split(' ');//массив из [фамилия][имя]][отчество]
-            if (str.Length < 5 && str.Length > 2)
+            try
             {
-                fio = true;
+                if (str.Length < 5 && str.Length > 2 && str[0] != "" && str[1] != "" && str[2] != "")
+                {
+                    fio = true;
+                }
+                else
+                {
+                    MessageBox.Show("Введите ФИО в формате (Фамилия Имя Отчество)или(Фамилия Фамилия2 Имя Отчество)", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
-            else
+            catch
             {
-                MessageBox.Show("Введите ФИО в формате (Фамилия Имя Отчество)или(Фамилия Фамилия2 Имя Отчество)","Внимание",MessageBoxButton.OK,MessageBoxImage.Warning);
+                MessageBox.Show("Введите ФИО в формате (Фамилия Имя Отчество)или(Фамилия Фамилия2 Имя Отчество)", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-
+            
             return fio;
         }
 
@@ -184,6 +179,14 @@ namespace Questionnaire
             }
 
             return fio;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            MainWindow mW = (MainWindow)Application.Current.MainWindow;
+            if (exit)
+                mW.Butt_Menu.Visibility = Visibility.Visible;
+
         }
     }
 }

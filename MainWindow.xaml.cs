@@ -28,6 +28,7 @@ namespace Questionnaire
         private SqlConnection connection;
         const bool useMARS = false;
         private int test_Number = 0;
+        private int id_Person;//переменная для хранения id если этот человек уже зарегестрированн в системе в этом учебном году
         public MainWindow()
         {
             InitializeComponent();
@@ -76,12 +77,7 @@ namespace Questionnaire
         }
 
 
-        #region
-        ///
-        /// регион считывания вопросов тестов из бд
-        /// 
-
-
+        #region Считывание вопросов тестов из бд
         /// <summary>
         /// Считование вопросов первого теста из бд
         /// </summary>
@@ -103,61 +99,129 @@ namespace Questionnaire
         }
         #endregion
 
-
+        #region Проверка на наличие это го человека в базе уже и запись нового человека
+        /// <summary>
+        /// Запись нового человека в бд
+        /// </summary>
+        /// <param name="fio">ФИО человека</param>
+        /// <param name="id_school">Id выбранной школы</param>
+        /// <param name="id_class">Id выбранного класса</param>
         public void Insert_Person(string fio,int id_school,int id_class )
+        {
+            #region Запрашиваем Id человека с введенными параметрами
+            var command_Id = new SqlCommand("select Id from Children where FIO = @fio and Id_School = @id_School and Id_Class = @id_Class",connection);
+            command_Id.Parameters.AddWithValue("@fio", fio);
+            command_Id.Parameters.AddWithValue("@id_School", id_school);
+            command_Id.Parameters.AddWithValue("@id_Class", id_class);
+            var reader_IdSecond = command_Id.ExecuteReader();
+            #endregion
+
+            if (reader_IdSecond.Read() )//Проверяем есть ли такой человек в базе уже
+            {
+                id_Person = Convert.ToInt32(reader_IdSecond["Id"]);//Если есть то его ID записываем в переменную
+                reader_IdSecond.Close();
+            }
+            else
+            {
+                #region если такого человека в базе нет то записываем его как нового
+
+                reader_IdSecond.Close();
+                try
+                {
+                    var insert_Command = new SqlCommand("insert into [Children]([FIO],[Id_School],[Id_Class]) values(@fio,@id_School,@id_Class)", connection);
+                    insert_Command.Parameters.AddWithValue("@fio", fio);
+                    insert_Command.Parameters.AddWithValue("@id_School", id_school);
+                    insert_Command.Parameters.AddWithValue("@id_Class", id_class);
+                    insert_Command.ExecuteNonQuery();
+                }
+                catch (SqlException e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+
+                #endregion
+            }
+        }
+        #endregion
+
+        #region Запись результатов теста в базу
+        /// <summary>
+        /// Запись результатов теста в базу
+        /// </summary>
+        /// <param name="results">Список ответов на тест</param>
+        /// <param name="test_Number">Номер теста</param>
+        public void Insert_Results(List<int> results,int test_Number)
         {
             try
             {
-                var insert_Command = new SqlCommand("insert into [Children]([FIO],[Id_School],[Id_Class]) values(@fio,@id_School,@id_Class)", connection);
-                insert_Command.Parameters.AddWithValue("@fio",fio);
-                insert_Command.Parameters.AddWithValue("@id_School", id_school);
-                insert_Command.Parameters.AddWithValue("@id_Class", id_class);
-                insert_Command.ExecuteNonQuery();
-            }
-            catch(SqlException e)
-            {
-                MessageBox.Show(e.Message);
-            }
-        }
-        
-
-        public void Insert_Results(List<int> results,int test_Number)
-        {
-            var commandread_Id = new SqlCommand("select MAX(Children.Id) as Id from Children", connection);
-            var reader_Id = commandread_Id.ExecuteReader();
-            reader_Id.Read();
-            #region
-            //пока не доделанно
-
-            //
-            //MessageBox.Show(reader_Id["Id"].ToString());
-            DateTime date = DateTime.Now;
-            MessageBox.Show(date.ToString());
-            var insert_CommandAnswers =new SqlCommand( "insert into [Questionnaire_Answers]([Id_Children],[Test_Number],[Date],[Question1],[Question2],[Question3],[Question4],[Question5],[Question6],[Question7],[Question8],[Question9],[Question10],[Question11],[Question12],[Question13],[Question14],[Question15],[Question16],[Question17],[Question18],[Question19],[Question20],[Question21],[Question22],[Question23],[Question24],[Question25],[Question26],[Question27],[Question28],[Question29],[Question30],[Question31],[Question32],[Question33],[Question34],[Question35],[Question36],[Question37],[Question38],[Question39],[Question40])" +
-                "values(@id_Children,@test_Number,@date,@question1,@question2,@question3,@question4,@question5,@question6,@question7,@question8,@question9,@question10,@question11,@question12,@question13,@question14,@question15,@question16,@question17,@question18,@question19,@question20,@question21,@question22,@question23,@question24,@question25,@question26,@question27,@question28,@question29,@question30,@question31,@question32,@question33,@question34,@question35,@question36,@question37,@question38,@question39,@question40)",connection);
-
-            insert_CommandAnswers.Parameters.AddWithValue("@id_Children", Convert.ToInt32( reader_Id["Id"]));
-            insert_CommandAnswers.Parameters.AddWithValue("@test_Number", test_Number);
-            insert_CommandAnswers.Parameters.AddWithValue("@date", date);
-            for(var i=0;i<40;i++)
-            {
-                var stroka = "@question" + (i+1).ToString();
-                if (i < results.Count)
+                if (id_Person == 0)//Проверка зашел новый человек => из базы достать максимальный ID
+                                   //Или зашел человек который уже был в базе и его ID уже в программе
                 {
+                    #region Выбираю максимальный ID => новый
+                    var commandread_Id = new SqlCommand("select MAX(Children.Id) as Id from Children", connection);
+                    var reader_Id = commandread_Id.ExecuteReader();
+                    reader_Id.Read();
+                    id_Person = Convert.ToInt32(reader_Id["Id"]);//записываю этот ID в переменную 
+                    reader_Id.Close();
+                    #endregion
+                }
+
+                #region Создание строки для записи данных в бд
+                DateTime date = DateTime.Now;
+
+                string stroka_Insert = "insert into [Questionnaire_Answers]([Id_Children],[Test_Number],[Date]";//Строка для записи результатов в бд
+                var i = 0;
+
+                while (i < results.Count)//добовляем похожие столбцы циклом
+                {
+                    stroka_Insert += ",[Question" + (i + 1).ToString() + "]";//собираю похожие
+                    i++;
+                }
+
+                stroka_Insert += ") values(@id_Children,@test_Number,@date";//добовляем уникальные переменные для значений
+                i = 0;
+
+                while (i < results.Count)//добовляем похожие переменные для значений ответов теста
+                {
+                    stroka_Insert += ",@question" + (i + 1).ToString();//собираю похожие
+                    i++;
+                }
+                stroka_Insert += ")";//закрываем строку
+                #endregion
+
+                #region Задаю комманду для SQL запроса и присваиваю переменным данные
+                var insert_CommandAnswers = new SqlCommand(stroka_Insert, connection);
+                insert_CommandAnswers.Parameters.AddWithValue("@id_Children", id_Person);
+               
+                insert_CommandAnswers.Parameters.AddWithValue("@test_Number", test_Number);
+                insert_CommandAnswers.Parameters.AddWithValue("@date", date);
+
+                for (i = 0; i < results.Count; i++)//Каждой переменной ответа теста присваиваю значения
+                {
+                    var stroka = "@question" + (i + 1).ToString();//собираю похожие
+
                     insert_CommandAnswers.Parameters.AddWithValue(stroka, results[i]);
+
                 }
-                else
-                {
-                    insert_CommandAnswers.Parameters.AddWithValue(stroka, null);
-                }
+                
+                insert_CommandAnswers.ExecuteNonQuery();
+                #endregion
             }
-            #endregion
+            catch (SqlException e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+
+            
+            
         }
+        #endregion
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = Win_closing;
+            e.Cancel = Win_closing;//Проверка на возможность закрытия основной формы(меняется в других окнах)
             
-            connection.Close(); 
+            connection.Close(); //Закрытие подключения к базе
         }
 
         

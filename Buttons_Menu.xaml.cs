@@ -30,7 +30,7 @@ namespace Questionnaire
         {
             MainWindow mW = (MainWindow)Application.Current.MainWindow;
             Login_page login_Page = new Login_page();
-            login_Page.Owner = mW;//Application.Current.MainWindow;
+            login_Page.Owner = mW;
             login_Page.Show();
             mW.Butt_Menu.Visibility = Visibility.Hidden;
             mW.Win_closing = true;

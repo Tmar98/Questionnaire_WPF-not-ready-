@@ -24,7 +24,7 @@ namespace Questionnaire
         public Schools schools;
         public Klasses klasses;
         public Klass klass;
-        public bool exit = false;
+        public bool exit = true;//бул для определения выхода из окна (какое окно показывать с вопросами или с тестами)
 
         public Login_page()
         {
@@ -66,6 +66,7 @@ namespace Questionnaire
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             MainWindow mW = (MainWindow)Application.Current.MainWindow;
+            
 
             Schools schools = mW.Login_Data_Load().Item1;
             _schoolBox.ItemsSource = schools;
@@ -99,27 +100,31 @@ namespace Questionnaire
                 mW.Win_closing = true;
                 MessageBox.Show("Введите имя", "Внимание", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else if (Convert.ToInt32( _input.Text) ==1234)
+            else if (_input.Text == "1234")//проверка на пороль учителя для просмотра результатов
             {
-
+                mW.Win_closing = true;
+                mW.results_Page.Visibility = Visibility.Visible;
+                exit = false;
+                this.Close();
             }
-            else if (string.IsNullOrEmpty(_schoolBox.Text))
+            else if (string.IsNullOrEmpty(_schoolBox.Text))//проверяется выбрана ли школа
             {
                 mW.Win_closing = true;
                 MessageBox.Show("Выберите школу", "Внимание", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else if (string.IsNullOrEmpty(_classBox.Text))
+            else if (string.IsNullOrEmpty(_classBox.Text))//проверяется выбран ли класс
             {
                 mW.Win_closing = true;
                 MessageBox.Show("Выберите класс", "Внимание", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else if(String_check(_input.Text))/////Нужно но мешает
+            else if(String_check(_input.Text))//если все заполненные данные верны и строка ФИО написанна правильно
             {
                 mW.Win_closing = true;
                 mW.Insert_Person(String_Helper(_input.Text), _schoolBox.SelectedIndex + 1, _classBox.SelectedIndex + 1);//передает введенные данные в команду для вставки в бд
                 mW.question_Page.Visibility = Visibility.Visible;//показывается страница с вопросами
+                exit = false;
                 this.Close();//это окно закрывается
-                exit = true;
+                
             }
      
         }
@@ -183,8 +188,10 @@ namespace Questionnaire
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            
             MainWindow mW = (MainWindow)Application.Current.MainWindow;
-            if (exit)
+            
+            if (exit)//если окно закрывается при нажатии на крестик то открывается главное окно
                 mW.Butt_Menu.Visibility = Visibility.Visible;
 
         }

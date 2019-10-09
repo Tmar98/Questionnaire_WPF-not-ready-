@@ -20,5 +20,5 @@ F:\Дима\Опросник\Questionnaire\obj\Debug\Questionnaire.exe
 F:\Дима\Опросник\Questionnaire\obj\Debug\Questionnaire.pdb
 F:\Дима\Опросник\Questionnaire\obj\Debug\Question_Page.g.cs
 F:\Дима\Опросник\Questionnaire\obj\Debug\Question_Page.baml
-F:\Дима\Опросник\Questionnaire\obj\Debug\Result_Page.g.cs
-F:\Дима\Опросник\Questionnaire\obj\Debug\Result_Page.baml
+F:\Дима\Опросник\Questionnaire\obj\Debug\Results.g.cs
+F:\Дима\Опросник\Questionnaire\obj\Debug\Results.baml

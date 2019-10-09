@@ -7,12 +7,8 @@
         mc:Ignorable="d"
         Title="Опросник" Height="450" Width="800" Closing="Window_Closing" >
 
-
-
-
     <Grid>
-        
-        
+
 
         <Border>
             <local:Buttons_Menu x:Name="Butt_Menu" Visibility="Visible"/>
@@ -22,11 +18,10 @@
             <local:Question_Page x:Name="question_Page"  Visibility="Hidden"/>
 
         </Border>
-        <!--<Border>
-            <Label x:Name="label" Content="Label"/>
-        </Border>-->
+        <Border>
+            <local:Results_Page x:Name="results_Page"  Visibility="Hidden"/>
 
-
-
+        </Border>
+        
     </Grid>
 </Window>

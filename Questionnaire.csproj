@@ -74,11 +74,9 @@
     <Compile Include="Question_Page.xaml.cs">
       <DependentUpon>Question_Page.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Results.xaml.cs">
-      <DependentUpon>Results.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Result_Page.xaml.cs">
-      <DependentUpon>Result_Page.xaml</DependentUpon>
+    <Compile Include="Results_Class.cs" />
+    <Compile Include="Results_Page.xaml.cs">
+      <DependentUpon>Results_Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="School.cs" />
     <Page Include="Buttons_Menu.xaml">
@@ -111,11 +109,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Results.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Result_Page.xaml">
+    <Page Include="Results_Page.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

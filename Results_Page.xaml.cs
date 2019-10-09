@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Questionnaire
 {
     /// <summary>
-    /// Логика взаимодействия для Result_Page.xaml
+    /// Логика взаимодействия для Results_Page.xaml
     /// </summary>
-    public partial class Result_Page : UserControl
+    public partial class Results_Page : UserControl
     {
-        public Result_Page()
+        public Results_Page()
         {
             InitializeComponent();
         }

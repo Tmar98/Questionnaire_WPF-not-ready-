@@ -217,6 +217,8 @@ namespace Questionnaire
         }
         #endregion
 
+
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = Win_closing;//Проверка на возможность закрытия основной формы(меняется в других окнах)

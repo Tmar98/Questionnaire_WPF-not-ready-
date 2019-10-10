@@ -70,6 +70,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Answers_Data.cs" />
     <Compile Include="Klass.cs" />
     <Compile Include="Question_Page.xaml.cs">
       <DependentUpon>Question_Page.xaml</DependentUpon>

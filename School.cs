@@ -10,8 +10,8 @@ namespace Questionnaire
 {
     public class School
     {
-         int Id { get; set; }
-         string School_Number { get; set; }
+        public int Id { get; set; }
+        public string School_Number { get; set; }
 
 
         public School(int id, string school_number)

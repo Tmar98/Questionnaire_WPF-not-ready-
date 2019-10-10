@@ -31,7 +31,7 @@ namespace Questionnaire
 
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-           
+            results.Clear();
             mW.Win_closing = true;
             var tuple =mW.Test1_Questions();
             queue_Questions = tuple.Item1;
@@ -58,7 +58,7 @@ namespace Questionnaire
 
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
-            results.Add(1);
+            results.Add(5);
             if (queue_Questions.Count !=0 )
             {
                 
@@ -72,7 +72,7 @@ namespace Questionnaire
 
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
-            results.Add(2);
+            results.Add(4);
             if (queue_Questions.Count != 0)
             {
                 
@@ -102,7 +102,7 @@ namespace Questionnaire
 
         private void Button4_Click(object sender, RoutedEventArgs e)
         {
-            results.Add(4);
+            results.Add(2);
             if (queue_Questions.Count != 0)
             {
                 
@@ -117,7 +117,7 @@ namespace Questionnaire
 
         private void Button5_Click(object sender, RoutedEventArgs e)
         {
-            results.Add(5);
+            results.Add(1);
             if (queue_Questions.Count != 0)
             {
 

@@ -24,7 +24,6 @@ namespace Questionnaire
     public partial class MainWindow : Window
     {
         public bool Win_closing = false;// Пере менная отвечающая за запрещение или разрешение закрытия окна
-        public Schools schools;
         private SqlConnection connection;
         const bool useMARS = false;
         private int test_Number = 0;
@@ -217,7 +216,27 @@ namespace Questionnaire
         }
         #endregion
 
+        public List<Answers_Data> Select_Answers()
+        {
+            var command_Answers = new SqlCommand("select * from Questionnaire_Answers where Id_Children>@id_Children", connection);
+            command_Answers.Parameters.AddWithValue("@id_Children", 23);
+            var reader_Answers = command_Answers.ExecuteReader();
 
+            List<Answers_Data> Answers = new List<Answers_Data>();
+
+            Answers_Data answers_Data = new Answers_Data();
+
+            reader_Answers.Read();
+            answers_Data = new Answers_Data(Convert.ToInt32(reader_Answers[0]), Convert.ToInt32(reader_Answers[1]), Convert.ToInt32(reader_Answers[2]),Convert.ToDateTime(reader_Answers[3]), Convert.ToInt32(reader_Answers[5]), Convert.ToInt32(reader_Answers[6]), Convert.ToInt32(reader_Answers[7]), Convert.ToInt32(reader_Answers[8]), Convert.ToInt32(reader_Answers[9]), Convert.ToInt32(reader_Answers[10]), Convert.ToInt32(reader_Answers[11]), Convert.ToInt32(reader_Answers[12]), Convert.ToInt32(reader_Answers[13]), Convert.ToInt32(reader_Answers[14]), Convert.ToInt32(reader_Answers[15]), Convert.ToInt32(reader_Answers[16]), Convert.ToInt32(reader_Answers[17]), Convert.ToInt32(reader_Answers[18]), Convert.ToInt32(reader_Answers[19]));
+            Answers.Add(answers_Data);
+
+            reader_Answers.Read();
+            answers_Data = new Answers_Data(Convert.ToInt32(reader_Answers[0]), Convert.ToInt32(reader_Answers[1]), Convert.ToInt32(reader_Answers[2]), Convert.ToDateTime(reader_Answers[3]), Convert.ToInt32(reader_Answers[5]), Convert.ToInt32(reader_Answers[6]), Convert.ToInt32(reader_Answers[7]), Convert.ToInt32(reader_Answers[8]), Convert.ToInt32(reader_Answers[9]), Convert.ToInt32(reader_Answers[10]), Convert.ToInt32(reader_Answers[11]), Convert.ToInt32(reader_Answers[12]), Convert.ToInt32(reader_Answers[13]), Convert.ToInt32(reader_Answers[14]), Convert.ToInt32(reader_Answers[15]), Convert.ToInt32(reader_Answers[16]), Convert.ToInt32(reader_Answers[17]), Convert.ToInt32(reader_Answers[18]), Convert.ToInt32(reader_Answers[19]));
+            reader_Answers.Close();
+            Answers.Add(answers_Data);
+
+            return Answers;
+        }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

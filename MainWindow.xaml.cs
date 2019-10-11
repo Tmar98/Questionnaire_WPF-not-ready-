@@ -98,6 +98,7 @@ namespace Questionnaire
         }
         #endregion
 
+
         #region Проверка на наличие это го человека в базе уже и запись нового человека
         /// <summary>
         /// Запись нового человека в бд
@@ -137,11 +138,19 @@ namespace Questionnaire
                 {
                     MessageBox.Show(e.Message);
                 }
-
+                //дальше считываем id нового человека
+                command_Id = new SqlCommand("select Id from Children where FIO = @fio and Id_School = @id_School and Id_Class = @id_Class", connection);
+                command_Id.Parameters.AddWithValue("@fio", fio);
+                command_Id.Parameters.AddWithValue("@id_School", id_school);
+                command_Id.Parameters.AddWithValue("@id_Class", id_class);
+                reader_IdSecond = command_Id.ExecuteReader();
                 #endregion
+                id_Person = Convert.ToInt32(reader_IdSecond["Id"]);//Если есть то его ID записываем в переменную
+                reader_IdSecond.Close();
             }
         }
         #endregion
+
 
         #region Запись результатов теста в базу
         /// <summary>
@@ -153,19 +162,9 @@ namespace Questionnaire
         {
             try
             {
-                if (id_Person == 0)//Проверка зашел новый человек => из базы достать максимальный ID
-                                   //Или зашел человек который уже был в базе и его ID уже в программе
-                {
-                    #region Выбираю максимальный ID => новый
-                    var commandread_Id = new SqlCommand("select MAX(Children.Id) as Id from Children", connection);
-                    var reader_Id = commandread_Id.ExecuteReader();
-                    reader_Id.Read();
-                    id_Person = Convert.ToInt32(reader_Id["Id"]);//записываю этот ID в переменную 
-                    reader_Id.Close();
-                    #endregion
-                }
 
                 #region Создание строки для записи данных в бд
+
                 DateTime date = DateTime.Now;
 
                 string stroka_Insert = "insert into [Questionnaire_Answers]([Id_Children],[Test_Number],[Date]";//Строка для записи результатов в бд
@@ -216,6 +215,11 @@ namespace Questionnaire
         }
         #endregion
 
+
+        /// <summary>
+        /// Считываем ответы на вопросы из бд
+        /// </summary>
+        /// <returns></returns>
         public List<Answers_Data> Select_Answers()
         {
             var command_Answers = new SqlCommand("select * from Questionnaire_Answers where Id_Children>@id_Children", connection);

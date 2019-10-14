@@ -21,7 +21,8 @@ namespace Questionnaire
     /// </summary>
     public partial class Results_Page : UserControl
     {
-        MainWindow mW = (MainWindow)Application.Current.MainWindow;
+        private MainWindow mW = (MainWindow)Application.Current.MainWindow;
+        string[] massSelects = new string[] {" "," "," "," " };
         public Results_Page()
         {
             InitializeComponent();
@@ -39,6 +40,8 @@ namespace Questionnaire
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show(_date.SelectedDate.ToString());
+            MessageBox.Show(massSelects[1]+" "+ massSelects[0]);
             List<Answers_Data> answers = mW.Select_Answers();
             List<Results_Class> results = new List<Results_Class>();
             
@@ -177,6 +180,74 @@ namespace Questionnaire
             return results_Class;
         }
 
-        
+        private void _selectionType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
+            switch (_selectionType.SelectedIndex+1)
+            {
+                case 1:
+                    {
+                        textBox.Visibility = Visibility.Visible;
+                    }
+                    break;
+                case 2:
+                {
+                        comboBox.Visibility = Visibility.Visible;
+                        comboBox.ItemsSource= mW.LoadSchools();
+                        comboBox.DisplayMemberPath = "School_Number";
+                }
+                    break;
+                case 3:
+                    {
+                        
+                        comboBox.Visibility = Visibility.Visible;
+                        label1.Visibility = Visibility.Visible;
+                        label1.Content = "Выберите школу";
+                        comboBox.ItemsSource = mW.LoadSchools();
+                        comboBox.DisplayMemberPath = "School_Number";
+                    }
+                    break;
+            }
+                
+        }
+
+        private void Addcondition_Click(object sender, RoutedEventArgs e)
+        {
+            switch (_selectionType.SelectedIndex + 1)
+            {
+                case 1:
+                    {
+                        massSelects[_selectionType.SelectedIndex] = " where c.FIO='" + textBox.Text+"' ";
+                    }
+                    break;
+                case 2:
+                    {
+                        massSelects[_selectionType.SelectedIndex] = " and s.Id="+comboBox.SelectedIndex.ToString()+" ";
+                    }
+                    break;
+            }
+
+            comboBox.Visibility = Visibility.Hidden;
+            textBox.Visibility = Visibility.Hidden;
+           
+        }
+
+        private string Create_SelectString(string[] massSelects)
+        {
+            var selectString = "select c.FIO , s.School_Number,cl.Class_Name,q.Date from Children c join Schools s on c.Id_School = s.Id "+massSelects[1]+
+                "join Classes cl on c.Id_Class = cl.Id " + massSelects[2]+ "join Questionnaire_Answers q on c.Id=q.Id_Children and q.Test_Result_Id IS  Null"+
+                "join Results_Table r on q.Id=r.Id_Answer "+massSelects[0];
+
+            return " ";
+        }
+
+        private void Button1_Click(object sender, RoutedEventArgs e)
+        {
+            label1.Content = "Выберите класс";
+            Klasses klasses = mW.LoadKlases();
+            List<Klass> kl = klasses.Where(k => k.Id_School == comboBox.SelectedIndex + 1).ToList();//выбор класов у которых id школы соответствует выбранной школе
+            comboBox.ItemsSource = kl;
+            comboBox.DisplayMemberPath = "Klass_Name";
+        }
     }
-}
+}                                                       //добавить дату 

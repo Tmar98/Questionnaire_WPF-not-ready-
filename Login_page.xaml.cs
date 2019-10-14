@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -68,7 +69,7 @@ namespace Questionnaire
             MainWindow mW = (MainWindow)Application.Current.MainWindow;
             
 
-            Schools schools = mW.Login_Data_Load().Item1;
+            Schools schools = mW.LoadSchools();
             _schoolBox.ItemsSource = schools;
         }
 
@@ -81,7 +82,7 @@ namespace Questionnaire
         {
             MainWindow mW = (MainWindow)Application.Current.MainWindow;
             var index =_schoolBox.SelectedIndex + 1;//индекс выбранной школы
-            Klasses klasses = mW.Login_Data_Load().Item2;
+            Klasses klasses = mW.LoadKlases();
             List<Klass> kl = klasses.Where(k => k.Id_School == index).ToList();//выбор класов у которых id школы соответствует выбранной школе
             _classBox.ItemsSource = kl;
         }
@@ -186,6 +187,7 @@ namespace Questionnaire
             return fio;
         }
 
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             
@@ -194,6 +196,20 @@ namespace Questionnaire
             if (exit)//если окно закрывается при нажатии на крестик то открывается главное окно
                 mW.Butt_Menu.Visibility = Visibility.Visible;
 
+        }
+
+
+        /// <summary>
+        /// При нажатии кнопки ентер срабатывает кнопка _entrenceButt
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                _entrenceButt.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            }
         }
     }
 }

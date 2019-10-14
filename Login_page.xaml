@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Questionnaire"
         mc:Ignorable="d"
-        Title="Вход в программу" Height="300" Width="450" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="Вход в программу" Height="300" Width="450" Loaded="Window_Loaded" Closing="Window_Closing" KeyUp="Window_KeyUp">
 
     <Window.Resources>
         <Style x:Key="alignment">

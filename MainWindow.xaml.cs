@@ -55,26 +55,31 @@ namespace Questionnaire
 
 
         /// <summary>
-        /// Считывание школ и класов из бд
+        /// Считывание школ из бд
         /// </summary>
         /// <returns></returns>
-        public Tuple<Schools, Klasses> Login_Data_Load()
+        public Schools LoadSchools()
         {
             var commandread_School = new SqlCommand("select * from Schools", connection);
             var reader_School = commandread_School.ExecuteReader();
             Schools schools = new Schools(reader_School);
             reader_School.Close();
+
+            return schools;
+        }
+
+        /// <summary>
+        /// Считывание классов из бд
+        /// </summary>
+        /// <returns></returns>
+        public Klasses LoadKlases()
+        {
             var commandread_Class = new SqlCommand("select * from Classes", connection);
             var reader_Class = commandread_Class.ExecuteReader();
             Klasses klasses = new Klasses(reader_Class);
             reader_Class.Close();
-
-            var tuple = new Tuple<Schools, Klasses>(schools, klasses);
-
-
-            return tuple;//переменная хранящая list<школ>,list<класов>
+            return klasses;
         }
-
 
         #region Считывание вопросов тестов из бд
         /// <summary>

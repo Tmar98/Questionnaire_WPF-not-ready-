@@ -26,18 +26,18 @@ namespace Questionnaire
         public bool Win_closing = false;// Пере менная отвечающая за запрещение или разрешение закрытия окна
         private SqlConnection connection;
         const bool useMARS = false;
-        private int test_Number = 0;
+        private int test_Number = 0;//номер теста
         private int id_Person;//переменная для хранения id если этот человек уже зарегестрированн в системе в этом учебном году
         public MainWindow()
         {
             InitializeComponent();
-            Connection();
+            ConnectionAsunc();
         }
 
         /// <summary>
         /// Подключение к базе данных
         /// </summary>
-        private async void Connection()
+        private async void ConnectionAsunc()
         {
             try
             {
@@ -60,7 +60,7 @@ namespace Questionnaire
         /// <returns></returns>
         public Schools LoadSchools()
         {
-            var commandread_School = new SqlCommand("select * from Schools", connection);
+            var commandread_School = new SqlCommand("select * from Schools", connection);//строка выбора из бд
             var reader_School = commandread_School.ExecuteReader();
             Schools schools = new Schools(reader_School);
             reader_School.Close();
@@ -74,10 +74,11 @@ namespace Questionnaire
         /// <returns></returns>
         public Klasses LoadKlases()
         {
-            var commandread_Class = new SqlCommand("select * from Classes", connection);
+            var commandread_Class = new SqlCommand("select * from Classes", connection);//строка выбора из бд
             var reader_Class = commandread_Class.ExecuteReader();
             Klasses klasses = new Klasses(reader_Class);
             reader_Class.Close();
+
             return klasses;
         }
 
@@ -89,16 +90,15 @@ namespace Questionnaire
         public Tuple<Queue<string>, int> Test1_Questions()
         {
             test_Number = 1;
-            var commandread = new SqlCommand("select Question_Text from EGE_Questions", connection);
+            var commandread = new SqlCommand("select Question_Text from EGE_Questions", connection);//строка выборки из бд
             var reader = commandread.ExecuteReader();
-            var list_Questions = new List<string>();
-            Queue<string> queue_Questions = new Queue<string>();
+            Queue<string> queue_Questions = new Queue<string>();//создаю очередь из строк
             while (reader.Read())
             {
-                queue_Questions.Enqueue(reader["Question_Text"].ToString());
+                queue_Questions.Enqueue(reader["Question_Text"].ToString());//в очередь записываю вопросы теста
             }
             reader.Close();
-            var tuple = new Tuple<Queue<string>, int>(queue_Questions, test_Number);
+            var tuple = new Tuple<Queue<string>, int>(queue_Questions, test_Number);//создаю переменную в которую передаю очередь вопросов и номер теста
             return tuple;
         }
         #endregion
@@ -113,11 +113,11 @@ namespace Questionnaire
         /// <param name="id_class">Id выбранного класса</param>
         public void Insert_Person(string fio,int id_school,int id_class )
         {
-            #region Запрашиваем Id человека с введенными параметрами
-            var command_Id = new SqlCommand("select Id from Children where FIO = @fio and Id_School = @id_School and Id_Class = @id_Class",connection);
-            command_Id.Parameters.AddWithValue("@fio", fio);
-            command_Id.Parameters.AddWithValue("@id_School", id_school);
-            command_Id.Parameters.AddWithValue("@id_Class", id_class);
+            #region Проверяем есть ли такой человек в базе уже
+            var command_Id = new SqlCommand("select Id from Children where FIO = @fio and Id_School = @id_School and Id_Class = @id_Class",connection);//строка выборки из бд
+            command_Id.Parameters.AddWithValue("@fio", fio);//присваиваю переменной строки подключения значение fio
+            command_Id.Parameters.AddWithValue("@id_School", id_school);//присваиваю переменной строки подключения значение id школы
+            command_Id.Parameters.AddWithValue("@id_Class", id_class);//присваиваю переменной строки подключения значение id класса
             var reader_IdSecond = command_Id.ExecuteReader();
             #endregion
 
@@ -133,10 +133,10 @@ namespace Questionnaire
                 reader_IdSecond.Close();
                 try
                 {
-                    var insert_Command = new SqlCommand("insert into [Children]([FIO],[Id_School],[Id_Class]) values(@fio,@id_School,@id_Class)", connection);
-                    insert_Command.Parameters.AddWithValue("@fio", fio);
-                    insert_Command.Parameters.AddWithValue("@id_School", id_school);
-                    insert_Command.Parameters.AddWithValue("@id_Class", id_class);
+                    var insert_Command = new SqlCommand("insert into [Children]([FIO],[Id_School],[Id_Class]) values(@fio,@id_School,@id_Class)", connection);//строка запроса к бд
+                    insert_Command.Parameters.AddWithValue("@fio", fio);//присваиваю переменной строки подключения значение fio
+                    insert_Command.Parameters.AddWithValue("@id_School", id_school);//присваиваю переменной строки подключения значение id школы
+                    insert_Command.Parameters.AddWithValue("@id_Class", id_class);//присваиваю переменной строки подключения значение id класса
                     insert_Command.ExecuteNonQuery();
                 }
                 catch (SqlException e)
@@ -145,13 +145,22 @@ namespace Questionnaire
                 }
                 //дальше считываем id нового человека
                 command_Id = new SqlCommand("select Id from Children where FIO = @fio and Id_School = @id_School and Id_Class = @id_Class", connection);
-                command_Id.Parameters.AddWithValue("@fio", fio);
-                command_Id.Parameters.AddWithValue("@id_School", id_school);
-                command_Id.Parameters.AddWithValue("@id_Class", id_class);
+                command_Id.Parameters.AddWithValue("@fio",fio );//присваиваю переменной строки подключения значение fio
+                command_Id.Parameters.AddWithValue("@id_School", id_school);//присваиваю переменной строки подключения значение id школы
+                command_Id.Parameters.AddWithValue("@id_Class", id_class);//присваиваю переменной строки подключения значение id класса
                 reader_IdSecond = command_Id.ExecuteReader();
+                
+                try
+                {
+                    reader_IdSecond.Read();
+                    id_Person = Convert.ToInt32(reader_IdSecond["Id"]);//ID записываем в переменную
+                    reader_IdSecond.Close();
+                }
+                catch (SqlException e)
+                {
+                    MessageBox.Show(e.Message);
+                }
                 #endregion
-                id_Person = Convert.ToInt32(reader_IdSecond["Id"]);//Если есть то его ID записываем в переменную
-                reader_IdSecond.Close();
             }
         }
         #endregion
@@ -177,7 +186,7 @@ namespace Questionnaire
 
                 while (i < results.Count)//добовляем похожие столбцы циклом
                 {
-                    stroka_Insert += ",[Question" + (i + 1).ToString() + "]";//собираю похожие
+                    stroka_Insert += ",[Question" + (i + 1).ToString() + "]";//собираю похожие названия столбцов
                     i++;
                 }
 
@@ -186,16 +195,16 @@ namespace Questionnaire
 
                 while (i < results.Count)//добовляем похожие переменные для значений ответов теста
                 {
-                    stroka_Insert += ",@question" + (i + 1).ToString();//собираю похожие
+                    stroka_Insert += ",@question" + (i + 1).ToString();//собираю похожие названия столбцов
                     i++;
                 }
                 stroka_Insert += ")";//закрываем строку
                 #endregion
 
                 #region Задаю комманду для SQL запроса и присваиваю переменным данные
-                var insert_CommandAnswers = new SqlCommand(stroka_Insert, connection);
+
+                var insert_CommandAnswers = new SqlCommand(stroka_Insert, connection);//строка запроса к бд
                 insert_CommandAnswers.Parameters.AddWithValue("@id_Children", id_Person);
-               
                 insert_CommandAnswers.Parameters.AddWithValue("@test_Number", test_Number);
                 insert_CommandAnswers.Parameters.AddWithValue("@date", date);
 
@@ -204,7 +213,6 @@ namespace Questionnaire
                     var stroka = "@question" + (i + 1).ToString();//собираю похожие
 
                     insert_CommandAnswers.Parameters.AddWithValue(stroka, results[i]);
-
                 }
                 
                 insert_CommandAnswers.ExecuteNonQuery();
@@ -224,27 +232,39 @@ namespace Questionnaire
         /// <summary>
         /// Считываем ответы на вопросы из бд
         /// </summary>
+        /// <param name="selectString">строка выбора из бд</param>
         /// <returns></returns>
-        public List<Answers_Data> Select_Answers()
+        public List<Answers_Data> Select_Answers(string selectString)
         {
-            var command_Answers = new SqlCommand("select * from Questionnaire_Answers where Id_Children>@id_Children", connection);
-            command_Answers.Parameters.AddWithValue("@id_Children", 23);
+            var command_Answers = new SqlCommand(selectString, connection);
             var reader_Answers = command_Answers.ExecuteReader();
 
             List<Answers_Data> Answers = new List<Answers_Data>();
 
             Answers_Data answers_Data = new Answers_Data();
 
-            reader_Answers.Read();
-            answers_Data = new Answers_Data(Convert.ToInt32(reader_Answers[0]), Convert.ToInt32(reader_Answers[1]), Convert.ToInt32(reader_Answers[2]),Convert.ToDateTime(reader_Answers[3]), Convert.ToInt32(reader_Answers[5]), Convert.ToInt32(reader_Answers[6]), Convert.ToInt32(reader_Answers[7]), Convert.ToInt32(reader_Answers[8]), Convert.ToInt32(reader_Answers[9]), Convert.ToInt32(reader_Answers[10]), Convert.ToInt32(reader_Answers[11]), Convert.ToInt32(reader_Answers[12]), Convert.ToInt32(reader_Answers[13]), Convert.ToInt32(reader_Answers[14]), Convert.ToInt32(reader_Answers[15]), Convert.ToInt32(reader_Answers[16]), Convert.ToInt32(reader_Answers[17]), Convert.ToInt32(reader_Answers[18]), Convert.ToInt32(reader_Answers[19]));
-            Answers.Add(answers_Data);
-
-            reader_Answers.Read();
-            answers_Data = new Answers_Data(Convert.ToInt32(reader_Answers[0]), Convert.ToInt32(reader_Answers[1]), Convert.ToInt32(reader_Answers[2]), Convert.ToDateTime(reader_Answers[3]), Convert.ToInt32(reader_Answers[5]), Convert.ToInt32(reader_Answers[6]), Convert.ToInt32(reader_Answers[7]), Convert.ToInt32(reader_Answers[8]), Convert.ToInt32(reader_Answers[9]), Convert.ToInt32(reader_Answers[10]), Convert.ToInt32(reader_Answers[11]), Convert.ToInt32(reader_Answers[12]), Convert.ToInt32(reader_Answers[13]), Convert.ToInt32(reader_Answers[14]), Convert.ToInt32(reader_Answers[15]), Convert.ToInt32(reader_Answers[16]), Convert.ToInt32(reader_Answers[17]), Convert.ToInt32(reader_Answers[18]), Convert.ToInt32(reader_Answers[19]));
+            while(reader_Answers.Read())
+            {
+                answers_Data = new Answers_Data(Convert.ToInt32(reader_Answers[0]), Convert.ToInt32(reader_Answers[1]), Convert.ToInt32(reader_Answers[2]), Convert.ToDateTime(reader_Answers[3]), Convert.ToInt32(reader_Answers[5]), Convert.ToInt32(reader_Answers[6]), Convert.ToInt32(reader_Answers[7]), Convert.ToInt32(reader_Answers[8]), Convert.ToInt32(reader_Answers[9]), Convert.ToInt32(reader_Answers[10]), Convert.ToInt32(reader_Answers[11]), Convert.ToInt32(reader_Answers[12]), Convert.ToInt32(reader_Answers[13]), Convert.ToInt32(reader_Answers[14]), Convert.ToInt32(reader_Answers[15]), Convert.ToInt32(reader_Answers[16]), Convert.ToInt32(reader_Answers[17]), Convert.ToInt32(reader_Answers[18]), Convert.ToInt32(reader_Answers[19]));
+                Answers.Add(answers_Data);
+            }
+            
             reader_Answers.Close();
-            Answers.Add(answers_Data);
 
             return Answers;
+        }
+
+        /// <summary>
+        /// Считываем ответы на данные детей без ответов из бд
+        /// </summary>
+        /// <param name="selectString">строка выбора из бд</param>
+        /// <returns></returns>
+        public SqlDataReader SelectChildrensWithoutAnswers(string selectString)
+        {
+
+            var command_Data = new SqlCommand(selectString, connection);
+            var reader = command_Data.ExecuteReader();
+            return reader;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -254,6 +274,6 @@ namespace Questionnaire
             connection.Close(); //Закрытие подключения к базе
         }
 
-        
+
     }
 }

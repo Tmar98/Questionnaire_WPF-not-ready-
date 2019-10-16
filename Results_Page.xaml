@@ -7,35 +7,40 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" IsVisibleChanged="UserControl_IsVisibleChanged">
     
-    <UserControl.Resources>
-        <Style TargetType="{x:Type TextBlock}" x:Key="WrapText">
-            <Setter Property="TextWrapping" Value="Wrap"/>
-        </Style>
-        
-    </UserControl.Resources>
-
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.3*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <DataGrid x:Name="dataGrid" Grid.Row="1" HorizontalAlignment="Center"  IsReadOnly="True"  VerticalAlignment="Center" Width="800" Height="345"  />
-
-        <Button x:Name="button" Content="Добавить" HorizontalAlignment="Left" Margin="677,44,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <ComboBox x:Name="_selectionType" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="10,19,0,0" SelectionChanged="_selectionType_SelectionChanged" >
-            <TextBlock>ФИО</TextBlock> 
-            <TextBlock>Школа</TextBlock>
-            <TextBlock>Класс</TextBlock>
-            <TextBlock>Дата</TextBlock>
-        </ComboBox>
-        <TextBox x:Name="textBox" Height="23" TextWrapping="Wrap" Text="TextBox" Width="120"/>
-        <DatePicker x:Name="_date" HorizontalAlignment="Left" Margin="508,64,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="label" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="82,46,0,0"/>
-        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="272,50,0,0" VerticalAlignment="Top" Width="120" Visibility="Hidden"/>
-        <Label x:Name="label1" Content="Label" HorizontalAlignment="Left" Margin="211,50,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="addcondition" Content="Button" HorizontalAlignment="Left" Margin="630,19,0,0" VerticalAlignment="Top" Width="75" Click="Addcondition_Click"/>
-        <Button x:Name="button1" Content="Button" HorizontalAlignment="Left" Margin="465,50,0,0" VerticalAlignment="Top" Width="75" Click="Button1_Click"/>
-
+        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            
+            <ComboBox x:Name="_selectionType"  HorizontalAlignment="Center" VerticalAlignment="Center" Width="120"  SelectionChanged="_selectionType_SelectionChanged" >
+                <TextBlock>ФИО</TextBlock> 
+                <TextBlock>Школа</TextBlock>
+                <TextBlock>Класс</TextBlock>
+                <TextBlock>Дата</TextBlock>
+            </ComboBox>
+            <TextBox x:Name="textBox" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23" TextWrapping="Wrap" Text="TextBox" Width="120" Visibility="Hidden"/>
+            <DatePicker x:Name="date" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden" />
+            <Label x:Name="label" Grid.ColumnSpan="2" Grid.Row="1"  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="40,0,0,0"/>
+            <ComboBox x:Name="comboBox" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="120" Visibility="Hidden"/>
+            <Label x:Name="label1" Grid.ColumnSpan="2" HorizontalAlignment="Center"  VerticalAlignment="Center" Visibility="Hidden"/>
+            <Button x:Name="addcondition" Grid.Column="2" Content="Добавить" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" Click="Addcondition_Click"/>
+            <Button x:Name="button1" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" Click="Button1_Click" Visibility="Hidden">
+                <TextBlock TextWrapping="Wrap">Выбрать школу</TextBlock>
+            </Button>
+            <Button x:Name="button" Grid.Column="2" Grid.Row="1" Content="Показать" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" Click="Button_Click"/>
+        </Grid>
+        <DataGrid x:Name="dataGrid" Grid.Row="1" HorizontalAlignment="Center"  IsReadOnly="True"  VerticalAlignment="Center" Width="780" Height="320"  />
     </Grid>
 </UserControl>

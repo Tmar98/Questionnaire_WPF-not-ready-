@@ -22,7 +22,8 @@ namespace Questionnaire
     public partial class Results_Page : UserControl
     {
         private MainWindow mW = (MainWindow)Application.Current.MainWindow;
-        string[] massSelects = new string[] {" "," "," "," " };
+        string[] massSelects = new string[] {" "," "," "," " };//Массив для добавления условий в выборку людей
+        bool dalee = true;//что бы нельзя было добавить строку если небыл выбран класс
         public Results_Page()
         {
             InitializeComponent();
@@ -31,6 +32,7 @@ namespace Questionnaire
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             mW.Win_closing = false;
+            label.Content = "Выбрать всех ";
         }
 
         /// <summary>
@@ -40,9 +42,9 @@ namespace Questionnaire
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(_date.SelectedDate.ToString());
-            MessageBox.Show(massSelects[1]+" "+ massSelects[0]);
-            List<Answers_Data> answers = mW.Select_Answers();
+            dataGrid.Columns.Clear();//очиска таблицы
+
+            List<Answers_Data> answers = mW.Select_Answers(Create_SelectStringAnswers(massSelects));//ответы детей
             List<Results_Class> results = new List<Results_Class>();
             
             var res1 = 0;
@@ -50,23 +52,40 @@ namespace Questionnaire
             var res3 = 0;
 
             var t = 0;
-            foreach (var answer in answers)
+            foreach (var answer in answers)//считаем баллы для каждого
             {
                 res1 = answer.Question1 + answer.Question7 + answer.Question10 + answer.Question13+Turn_Around(answer.Question4);
                 res2 = answer.Question2 + answer.Question5 + answer.Question11 + answer.Question14 + Turn_Around(answer.Question8);
                 res3 = answer.Question3 + answer.Question12 + Turn_Around(answer.Question6) + Turn_Around(answer.Question9) + Turn_Around(answer.Question15);
                 var results_Class = Point_Results( res1, res2, res3, answer.Id);
-                results.Add(results_Class);
+                results.Add(results_Class);//передаем их в list результатов
                 t = answer.Test_Number;
             }
 
+            var reader_Data = mW.SelectChildrensWithoutAnswers(Create_SelectStringFIO(massSelects));//получаем данные детей которые проходили тест
+            List<Named_Results> gridResults = new List<Named_Results>();
+            var i = 1;
+            while(reader_Data.Read())//собираем class для отображения в таблице
+            {
+                List<Results_Class> rs = results.Where(r => r.Id_Answer == Convert.ToInt32( reader_Data[4])).ToList();//ищем результаты для задонных результатов
+                Named_Results named_Results = new Named_Results(i,reader_Data[0].ToString(),reader_Data[1].ToString(),reader_Data[2].ToString(), Convert.ToDateTime(reader_Data[3]),rs[0]);//добовляем к данным детей их результаты
+                gridResults.Add(named_Results);
+                i++;
+            }
+            
 
-
-            switch(t)
+            switch(t)//для каждого теста свое количество сталбцов
             {
                 case 1:
                     {
                         dataGrid.AutoGenerateColumns = false;
+
+                        DataGridTextColumn c0 = new DataGridTextColumn();
+                        c0.Header = "Result1";
+                        c0.Width = 110;
+                        c0.Binding = new Binding("FIO");
+                        dataGrid.Columns.Add(c0);
+
                         DataGridTextColumn c1 = new DataGridTextColumn();
                         c1.Header = "Result1";
                         c1.Width = 110;
@@ -76,31 +95,35 @@ namespace Questionnaire
                         DataGridTextColumn c2 = new DataGridTextColumn();
                         c2.Header = "Result1";
                         c2.Width = 110;
-                        c2.Binding = new Binding("Result1");
+                        c2.Binding = new Binding("Result2");
                         dataGrid.Columns.Add(c2);
 
-                        DataGridTextColumn c3 = new DataGridTextColumn();
-                        c3.Header = "Result1";
-                        c3.Width = 110;
-                        c3.Binding = new Binding("Date");
-                        dataGrid.Columns.Add(c3);
+                        //DataGridTextColumn c3 = new DataGridTextColumn();
+                        //c3.Header = "Result1";
+                        //c3.Width = 110;
+                        //c3.Binding = new Binding("Date");
+                        //dataGrid.Columns.Add(c3);
 
                         var style = new Style(typeof(TextBlock));
                         style.Setters.Add(new Setter(TextBlock.TextWrappingProperty, TextWrapping.Wrap));
                         c1.ElementStyle = style;
                         c2.ElementStyle = style;
-                        c3.ElementStyle = style;
+                        c0.ElementStyle = style;
                     } ;
                     break;
             }
 
-            List<rt> List_Rt = new List<rt>();
-            rt Rt = new rt( results[0], DateTime.Now);
-            List_Rt.Add(Rt);
-            Rt = new rt(results[1], DateTime.Now);
-            List_Rt.Add(Rt);
-            dataGrid.ItemsSource = List_Rt;
+            dataGrid.ItemsSource = gridResults;//передаем в таблицу данные детей объедененые с их ответами
+            
+            //очищаем массив условий и текст условия
+            massSelects[0] = " ";
+            massSelects[1] = " ";
+            massSelects[2] = " ";
+            massSelects[3] = " ";
+            label.Content = "Выбрать всех ";
+
         }
+
         /// <summary>
         /// обратный порядок баллов
         /// </summary>
@@ -133,7 +156,7 @@ namespace Questionnaire
         }
 
         /// <summary>
-        /// Вычисление результатов теста
+        /// Вычисление результатов теста 1
         /// </summary>
         /// <param name="res1">Первый результат</param>
         /// <param name="res2">Второй результат</param>
@@ -180,74 +203,154 @@ namespace Questionnaire
             return results_Class;
         }
 
+        /// <summary>
+        /// при выборе любого элемента combobox появляются элементы для ввода нужной информации
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _selectionType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             
-            switch (_selectionType.SelectedIndex+1)
+            switch (_selectionType.SelectedIndex+1)//+1 так как элементы combobox начинаются с 0
             {
-                case 1:
+                case 1://ФИО
                     {
                         textBox.Visibility = Visibility.Visible;
+                        comboBox.Visibility = Visibility.Hidden;
                     }
                     break;
-                case 2:
+                case 2://Школа
                 {
                         comboBox.Visibility = Visibility.Visible;
+                        textBox.Visibility = Visibility.Hidden;
                         comboBox.ItemsSource= mW.LoadSchools();
                         comboBox.DisplayMemberPath = "School_Number";
                 }
                     break;
-                case 3:
+                case 3://Класс
                     {
-                        
-                        comboBox.Visibility = Visibility.Visible;
-                        label1.Visibility = Visibility.Visible;
-                        label1.Content = "Выберите школу";
-                        comboBox.ItemsSource = mW.LoadSchools();
-                        comboBox.DisplayMemberPath = "School_Number";
+                        textBox.Visibility = Visibility.Hidden;
+                        if (massSelects[1] == " ")//смотрим была ли указана до этого школа если нет то нужно сначала выбрать ее
+                        {
+                            dalee = false;
+                            comboBox.Visibility = Visibility.Visible;
+                            label1.Visibility = Visibility.Visible;
+                            label1.Content = "Выберите школу";
+                            comboBox.ItemsSource = mW.LoadSchools();
+                            comboBox.DisplayMemberPath = "School_Number";
+                            button1.Visibility = Visibility.Visible;
+                        }
+                        else//если школа выбрана то на основе этой школы отображаются классы
+                        {
+                            comboBox.Visibility = Visibility.Visible;
+                            Klasses klasses = mW.LoadKlases();
+                            List<Klass> kl = klasses.Where(k => k.Id_School == Convert.ToInt32( massSelects[1].Substring(10,massSelects[1].Length-11))).ToList();//выбор класов у которых id школы соответствует выбранной школе
+                            comboBox.ItemsSource = kl;
+                            comboBox.DisplayMemberPath = "Klass_Name";
+                        }
+                    }
+                    break;
+                case 4://Дата
+                    {
+                        date.Visibility = Visibility.Visible;
+                        comboBox.Visibility = Visibility.Hidden;
+                        textBox.Visibility = Visibility.Hidden;
                     }
                     break;
             }
                 
         }
 
+        /// <summary>
+        /// Принажатии на кнопку добавить добовляется условие поиска в бд
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Addcondition_Click(object sender, RoutedEventArgs e)
         {
-            switch (_selectionType.SelectedIndex + 1)
+            if (dalee)//когда идет выбор школы для выбора класса из _selectionType_SelectionChanged case3 не дает ввести выбранную школу как класс
             {
-                case 1:
-                    {
-                        massSelects[_selectionType.SelectedIndex] = " where c.FIO='" + textBox.Text+"' ";
-                    }
-                    break;
-                case 2:
-                    {
-                        massSelects[_selectionType.SelectedIndex] = " and s.Id="+comboBox.SelectedIndex.ToString()+" ";
-                    }
-                    break;
+                
+                switch (_selectionType.SelectedIndex + 1)//+1 так как элементы combobox начинаются с 0
+                {
+                    case 1://ФИО
+                        {
+                            massSelects[_selectionType.SelectedIndex] = " and c.FIO='" + textBox.Text + "' ";//добавляем в массив готовую часть с условием
+                            label.Content +="c ФИО '"+ textBox.Text + "' ";//добавляем к условию выбранное условие для понимания какое условие есть для выборки людей из бд
+                            textBox.Visibility = Visibility.Hidden;
+                        }
+                        break;
+                    case 2://Школа
+                        {
+                            massSelects[_selectionType.SelectedIndex] = " and s.Id=" + (comboBox.SelectedIndex+1).ToString() + " ";
+                            label.Content += "из школы №"+comboBox.Text.Trim()+" ";//добавляем к условию выбранное условие для понимания какое условие есть для выборки людей из бд
+                            comboBox.Visibility = Visibility.Hidden;
+                        }
+                        break;
+                    case 3://Класс
+                        {
+                            massSelects[_selectionType.SelectedIndex] = " and cl.Id=" + (comboBox.SelectedIndex+1).ToString() + " ";
+                            label.Content += "из "+comboBox.Text.Trim()+" класса ";//добавляем к условию выбранное условие для понимания какое условие есть для выборки людей из бд
+                            comboBox.Visibility = Visibility.Hidden;
+                            label1.Visibility = Visibility.Hidden;
+                            button1.Visibility = Visibility.Hidden;
+                        }
+                        break;
+                    case 4://Дата
+                        {
+                            massSelects[_selectionType.SelectedIndex] = "and q.Date between '" +  date.SelectedDate.ToString() + "' and '" + date.SelectedDate.ToString().Substring(0, 10)+" 23:59:59' ";
+                            label.Content += "кто проходил тест "+ date.SelectedDate.ToString().Substring(0, 10)+" ";//добавляем к условию выбранное условие для понимания какое условие есть для выборки людей из бд
+                        }
+                        break;
+                }
             }
+            
 
-            comboBox.Visibility = Visibility.Hidden;
-            textBox.Visibility = Visibility.Hidden;
-           
+            
         }
 
-        private string Create_SelectString(string[] massSelects)
+        /// <summary>
+        /// Создание строки запроса к бд с введенными условиями для получения данных детей
+        /// </summary>
+        /// <param name="massSelects">массив в котором находятся готовые части условий</param>
+        /// <returns></returns>
+        private string Create_SelectStringFIO(string[] massSelects)
         {
-            var selectString = "select c.FIO , s.School_Number,cl.Class_Name,q.Date from Children c join Schools s on c.Id_School = s.Id "+massSelects[1]+
-                "join Classes cl on c.Id_Class = cl.Id " + massSelects[2]+ "join Questionnaire_Answers q on c.Id=q.Id_Children and q.Test_Result_Id IS  Null"+
-                "join Results_Table r on q.Id=r.Id_Answer "+massSelects[0];
+            var selectString = "select c.FIO, s.School_Number,cl.Class_Name,q.Date,q.Id from Children c join Schools s on c.Id_School = s.Id " + massSelects[1]+
+                "join Classes cl on c.Id_Class = cl.Id " + massSelects[2]+ "join Questionnaire_Answers q on c.Id=q.Id_Children and q.Test_Result_Id IS  Null "+ massSelects[3]+ massSelects[0];
 
-            return " ";
+            return selectString;
         }
 
+        /// <summary>
+        /// Создание строки запроса к бд с введенными условиями для получения ответов на тест
+        /// </summary>
+        /// <param name="massSelects">массив в котором находятся готовые части условий</param>
+        /// <returns></returns>
+        private string Create_SelectStringAnswers(string[] massSelects)
+        {
+            var selectString = "select * from Questionnaire_Answers q join Children c on q.Id_Children = c.Id "+ massSelects[0] + " join Schools s on c.Id_School = s.Id " + massSelects[1] +
+                " join Classes cl on c.Id_Class = cl.Id " + massSelects[2] +" where q.Test_Result_Id IS  Null " + massSelects[3]  ;
+
+            return selectString;
+        }
+
+        /// <summary>
+        /// кнопка для выбора класса после уточнения в какой школе искать класс
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
+            button1.Visibility = Visibility.Hidden;
             label1.Content = "Выберите класс";
             Klasses klasses = mW.LoadKlases();
             List<Klass> kl = klasses.Where(k => k.Id_School == comboBox.SelectedIndex + 1).ToList();//выбор класов у которых id школы соответствует выбранной школе
             comboBox.ItemsSource = kl;
             comboBox.DisplayMemberPath = "Klass_Name";
+            dalee = true;//открывает доступ к добавлению условия на класс 
         }
+
+        
     }
-}                                                       //добавить дату 
+}                      

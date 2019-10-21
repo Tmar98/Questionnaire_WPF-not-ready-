@@ -33,13 +33,12 @@ namespace Questionnaire
         {
             results.Clear();
             mW.Win_closing = true;
-            var tuple =mW.Test1_Questions();
-            queue_Questions = tuple.Item1;
-            test_Number = tuple.Item2;
+            queue_Questions = mW.Test1_Questions();//добавить глобально номер теста и считывать его
+            //test_Number = tuple.Item2;
 
             var question =queue_Questions.Dequeue();
             QuestionArea.Text = question;
-            
+            MessageBox.Show(test_Number.ToString());
             if (test_Number==1)
             {
                 button1.Visibility = Visibility.Visible;
@@ -133,10 +132,15 @@ namespace Questionnaire
 
         private void End_Test()
         {
-            mW.Insert_Results(results, test_Number);
+            mW.Insert_Answers(results, test_Number);
             mW.question_Page.Visibility = Visibility.Hidden;
             MessageBox.Show("Тест пройден");
             mW.Butt_Menu.Visibility = Visibility.Visible;
+        }
+
+        public void Nomer_Testa(int test)
+        {
+            test_Number = test;
         }
     }
 }

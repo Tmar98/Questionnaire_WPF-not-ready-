@@ -29,6 +29,7 @@
                 <TextBlock>Школа</TextBlock>
                 <TextBlock>Класс</TextBlock>
                 <TextBlock>Дата</TextBlock>
+                <TextBlock>Тест</TextBlock>
             </ComboBox>
             <TextBox x:Name="textBox" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23" TextWrapping="Wrap" Text="TextBox" Width="120" Visibility="Hidden"/>
             <DatePicker x:Name="date" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden" />

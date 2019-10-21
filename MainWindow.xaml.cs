@@ -26,7 +26,6 @@ namespace Questionnaire
         public bool Win_closing = false;// Пере менная отвечающая за запрещение или разрешение закрытия окна
         private SqlConnection connection;
         const bool useMARS = false;
-        private int test_Number = 0;//номер теста
         private int id_Person;//переменная для хранения id если этот человек уже зарегестрированн в системе в этом учебном году
         public MainWindow()
         {
@@ -87,9 +86,8 @@ namespace Questionnaire
         /// Считование вопросов первого теста из бд
         /// </summary>
         /// <returns></returns>
-        public Tuple<Queue<string>, int> Test1_Questions()
+        public Queue<string> Test1_Questions()
         {
-            test_Number = 1;
             var commandread = new SqlCommand("select Question_Text from EGE_Questions", connection);//строка выборки из бд
             var reader = commandread.ExecuteReader();
             Queue<string> queue_Questions = new Queue<string>();//создаю очередь из строк
@@ -98,8 +96,8 @@ namespace Questionnaire
                 queue_Questions.Enqueue(reader["Question_Text"].ToString());//в очередь записываю вопросы теста
             }
             reader.Close();
-            var tuple = new Tuple<Queue<string>, int>(queue_Questions, test_Number);//создаю переменную в которую передаю очередь вопросов и номер теста
-            return tuple;
+            
+            return queue_Questions;
         }
         #endregion
 
@@ -172,7 +170,7 @@ namespace Questionnaire
         /// </summary>
         /// <param name="results">Список ответов на тест</param>
         /// <param name="test_Number">Номер теста</param>
-        public void Insert_Results(List<int> results,int test_Number)
+        public void Insert_Answers(List<int> results,int test_Number)
         {
             try
             {
@@ -222,9 +220,7 @@ namespace Questionnaire
             {
                 MessageBox.Show(e.ToString());
             }
-
-            
-            
+ 
         }
         #endregion
 
@@ -265,6 +261,29 @@ namespace Questionnaire
             var command_Data = new SqlCommand(selectString, connection);
             var reader = command_Data.ExecuteReader();
             return reader;
+        }
+
+
+        public  void Insert_Results(List<Results_Class> results_Classes)
+        {
+            var insert_String = "INSERT INTO Results_Table (Id_Answer, Result1,Result2,Result3) VALUES ";// (@id_Answer,@result1,@result2,@result3)";
+            foreach (Results_Class t in results_Classes)
+            {
+                switch (t.TestNumber)
+                {
+                    case 1:
+                        {
+                            insert_String += " ( " + t.Id_Answer.ToString() + ", '" + t.Result1.ToString() + "' ,'" + t.Result2.ToString() + "' ,'" + t.Result3.ToString() + "'),";
+                        }
+                        break;
+
+                }
+
+            }
+
+            insert_String= insert_String.Substring(0,insert_String.Length - 1);
+            var insert_CommandAnswers = new SqlCommand(insert_String, connection);//строка запроса к бд
+            insert_CommandAnswers.ExecuteNonQuery();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

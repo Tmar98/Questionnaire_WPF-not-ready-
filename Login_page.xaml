@@ -46,6 +46,6 @@
         <ComboBox Grid.Row="1" Grid.Column="1" x:Name="_schoolBox"   Width="120" DisplayMemberPath = "School_Number"  Style="{StaticResource alignment}" SelectionChanged="_schoolBox_SelectionChanged"/>
         <ComboBox Grid.Row="2" Grid.Column="1" x:Name="_classBox"  Width="120" DisplayMemberPath = "Klass_Name" Style="{StaticResource alignment}"/>
         
-        <Button Grid.Column="2" Grid.Row="3" x:Name="_entrenceButt" Content="Button" Width="75" Style="{StaticResource alignment}" Click="_entrenceButt_Click" />
+        <Button Grid.Column="2" Grid.Row="3" x:Name="_entrenceButt" Content="Продолжить" Width="75" Style="{StaticResource alignment}" Click="_entrenceButt_Click" />
     </Grid>
 </Window>

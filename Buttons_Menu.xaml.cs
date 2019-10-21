@@ -29,6 +29,7 @@ namespace Questionnaire
         private void Butt_Test4_Click(object sender, RoutedEventArgs e)
         {
             MainWindow mW = (MainWindow)Application.Current.MainWindow;
+            mW.question_Page.Nomer_Testa(1);
             Login_page login_Page = new Login_page();
             login_Page.Owner = mW;
             login_Page.Show();

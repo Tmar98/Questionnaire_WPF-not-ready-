@@ -22,7 +22,7 @@ namespace Questionnaire
     public partial class Results_Page : UserControl
     {
         private MainWindow mW = (MainWindow)Application.Current.MainWindow;
-        string[] massSelects = new string[] {" "," "," "," " };//Массив для добавления условий в выборку людей
+        string[] massSelects = new string[] {" "," "," "," "," " };//Массив для добавления условий в выборку людей
         bool dalee = true;//что бы нельзя было добавить строку если небыл выбран класс
         public Results_Page()
         {
@@ -57,12 +57,15 @@ namespace Questionnaire
                 res1 = answer.Question1 + answer.Question7 + answer.Question10 + answer.Question13+Turn_Around(answer.Question4);
                 res2 = answer.Question2 + answer.Question5 + answer.Question11 + answer.Question14 + Turn_Around(answer.Question8);
                 res3 = answer.Question3 + answer.Question12 + Turn_Around(answer.Question6) + Turn_Around(answer.Question9) + Turn_Around(answer.Question15);
-                var results_Class = Point_Results( res1, res2, res3, answer.Id);
+                var results_Class = Point_Results( res1, res2, res3, answer.Id,answer.Test_Number);
                 results.Add(results_Class);//передаем их в list результатов
-                t = answer.Test_Number;
+                
             }
 
+            
             var reader_Data = mW.SelectChildrensWithoutAnswers(Create_SelectStringFIO(massSelects));//получаем данные детей которые проходили тест
+            mW.Insert_Results(results);
+
             List<Named_Results> gridResults = new List<Named_Results>();
             var i = 1;
             while(reader_Data.Read())//собираем class для отображения в таблице
@@ -163,7 +166,7 @@ namespace Questionnaire
         /// <param name="res3">Третий результат</param>
         /// <param name="id">id строки ответов в бд</param>
         /// <returns></returns>
-        private Results_Class Point_Results(int res1,int res2,int res3,int id)
+        private Results_Class Point_Results(int res1,int res2,int res3,int id,int testNumber)
         {
             string[] Results_array = new string[]//массив с первой частью результата
             {
@@ -199,7 +202,7 @@ namespace Questionnaire
                     Results_array[i] += " высокий (" + array[i].ToString() + " б)";
                 }
             }
-            Results_Class results_Class = new Results_Class(id,Results_array[0], Results_array[1], Results_array[2]);
+            Results_Class results_Class = new Results_Class(id,Results_array[0], Results_array[1], Results_array[2],testNumber);
             return results_Class;
         }
 
@@ -217,12 +220,14 @@ namespace Questionnaire
                     {
                         textBox.Visibility = Visibility.Visible;
                         comboBox.Visibility = Visibility.Hidden;
+                        date.Visibility = Visibility.Hidden;
                     }
                     break;
                 case 2://Школа
                 {
                         comboBox.Visibility = Visibility.Visible;
                         textBox.Visibility = Visibility.Hidden;
+                        date.Visibility = Visibility.Hidden;
                         comboBox.ItemsSource= mW.LoadSchools();
                         comboBox.DisplayMemberPath = "School_Number";
                 }
@@ -230,6 +235,7 @@ namespace Questionnaire
                 case 3://Класс
                     {
                         textBox.Visibility = Visibility.Hidden;
+                        date.Visibility = Visibility.Hidden;
                         if (massSelects[1] == " ")//смотрим была ли указана до этого школа если нет то нужно сначала выбрать ее
                         {
                             dalee = false;
@@ -255,6 +261,15 @@ namespace Questionnaire
                         date.Visibility = Visibility.Visible;
                         comboBox.Visibility = Visibility.Hidden;
                         textBox.Visibility = Visibility.Hidden;
+                    }
+                    break;
+                case 5:
+                    {
+                        date.Visibility = Visibility.Hidden;
+                        textBox.Visibility = Visibility.Hidden;
+                        comboBox.Visibility = Visibility.Visible;
+                        List<string> testName = new List<string> {"1","2","3" };
+                        comboBox.ItemsSource = testName;
                     }
                     break;
             }
@@ -300,6 +315,14 @@ namespace Questionnaire
                         {
                             massSelects[_selectionType.SelectedIndex] = "and q.Date between '" +  date.SelectedDate.ToString() + "' and '" + date.SelectedDate.ToString().Substring(0, 10)+" 23:59:59' ";
                             label.Content += "кто проходил тест "+ date.SelectedDate.ToString().Substring(0, 10)+" ";//добавляем к условию выбранное условие для понимания какое условие есть для выборки людей из бд
+                            date.Visibility = Visibility.Hidden;
+                        }
+                        break;
+                    case 5:
+                        {
+                            massSelects[_selectionType.SelectedIndex] = "and q.Test_Number=" + (comboBox.SelectedIndex + 1).ToString() + " ";
+                            label.Content += "кто прохадил тест '" + comboBox.Text.Trim() + "' ";
+                            comboBox.Visibility = Visibility.Hidden;
                         }
                         break;
                 }

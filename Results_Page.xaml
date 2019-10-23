@@ -42,6 +42,15 @@
             </Button>
             <Button x:Name="button" Grid.Column="2" Grid.Row="1" Content="Показать" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" Click="Button_Click"/>
         </Grid>
-        <DataGrid x:Name="dataGrid" Grid.Row="1" HorizontalAlignment="Center"  IsReadOnly="True"  VerticalAlignment="Center" Width="780" Height="320"  />
+        <DataGrid x:Name="dataGrid" Grid.Row="1" HorizontalAlignment="Center"  IsReadOnly="True"  VerticalAlignment="Center" Width="780" Height="320"  >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="id" Binding="{Binding Id}" ></DataGridTextColumn>
+                <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Школа №" Binding="{Binding School_Number}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Класс номер" Binding="{Binding Klass_Name}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Дата" Binding="{Binding Date}"></DataGridTextColumn>
+            </DataGrid.Columns>
+
+        </DataGrid>
     </Grid>
 </UserControl>

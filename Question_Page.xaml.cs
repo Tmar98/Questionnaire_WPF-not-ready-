@@ -33,12 +33,10 @@ namespace Questionnaire
         {
             results.Clear();
             mW.Win_closing = true;
-            queue_Questions = mW.Test1_Questions();//добавить глобально номер теста и считывать его
-            //test_Number = tuple.Item2;
+            queue_Questions = mW.Test1_Questions();
 
             var question =queue_Questions.Dequeue();
             QuestionArea.Text = question;
-            MessageBox.Show(test_Number.ToString());
             if (test_Number==1)
             {
                 button1.Visibility = Visibility.Visible;

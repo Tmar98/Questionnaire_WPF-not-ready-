@@ -60,7 +60,20 @@ namespace Questionnaire
         public Schools LoadSchools()
         {
             var commandread_School = new SqlCommand("select * from Schools", connection);//строка выбора из бд
-            var reader_School = commandread_School.ExecuteReader();
+            SqlDataReader reader_School=null;
+            try
+            {
+                reader_School = commandread_School.ExecuteReader();
+            }
+            catch(SqlException e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+            finally
+            {
+                
+            }
+            
             Schools schools = new Schools(reader_School);
             reader_School.Close();
 
@@ -255,25 +268,40 @@ namespace Questionnaire
         /// </summary>
         /// <param name="selectString">строка выбора из бд</param>
         /// <returns></returns>
-        public SqlDataReader SelectChildrensWithoutAnswers(string selectString)
+        public List<List<string>> SelectChildrensWithoutAnswers(string selectString)
         {
 
             var command_Data = new SqlCommand(selectString, connection);
-            var reader = command_Data.ExecuteReader();
-            return reader;
+            var allFioDate = FioDate(command_Data.ExecuteReader());
+            
+            return allFioDate;
         }
 
-
-        public  void Insert_Results(List<Results_Class> results_Classes)
+        public List<Results_Class> Select_Results(string selectString)
+        {
+            var command_Results = new SqlCommand(selectString, connection);
+            var reader_Results = command_Results.ExecuteReader();
+            List<Results_Class> listResults = new List<Results_Class>();
+            while(reader_Results.Read())
+            {
+                Results_Class results_Class = new Results_Class(Convert.ToInt32( reader_Results[0]),Convert.ToInt32( reader_Results[1]), reader_Results[2].ToString(), reader_Results[3].ToString(), reader_Results[4].ToString(), reader_Results[5].ToString(), reader_Results[6].ToString());
+                listResults.Add(results_Class);
+            }
+            reader_Results.Close();
+            return listResults;
+        }
+        public  void Insert_Results(List<Results_Class> results_Classes,List<int> testNumber)//запись результатов в бд
         {
             var insert_String = "INSERT INTO Results_Table (Id_Answer, Result1,Result2,Result3) VALUES ";// (@id_Answer,@result1,@result2,@result3)";
+            var i = 0;
             foreach (Results_Class t in results_Classes)
             {
-                switch (t.TestNumber)
+                switch (testNumber[i])
                 {
                     case 1:
                         {
                             insert_String += " ( " + t.Id_Answer.ToString() + ", '" + t.Result1.ToString() + "' ,'" + t.Result2.ToString() + "' ,'" + t.Result3.ToString() + "'),";
+                            i++;
                         }
                         break;
 
@@ -284,8 +312,41 @@ namespace Questionnaire
             insert_String= insert_String.Substring(0,insert_String.Length - 1);
             var insert_CommandAnswers = new SqlCommand(insert_String, connection);//строка запроса к бд
             insert_CommandAnswers.ExecuteNonQuery();
+
+            Update_Info(results_Classes);
         }
 
+        private void Update_Info(List<Results_Class> results_Classes)//изменяем данные и пишем номер теста в поле  
+        {
+            var update_String = " UPDATE Questionnaire_Answers SET Test_Result_Id = CASE Id ";
+            foreach (Results_Class t in results_Classes)
+            {
+                update_String+=" WHEN "+t.Id_Answer+" THEN "+t.Id_Result+" ";
+            }
+            update_String += " ELSE Test_Result_Id END";
+            var update_Command = new SqlCommand(update_String, connection);
+            update_Command.ExecuteNonQuery();
+        }
+
+
+        private List<List<string>> FioDate (SqlDataReader reader)
+        {
+            
+            List<List<string>> allFioDate = new List<List<string>>();
+            while( reader.Read())
+            {
+                List<string> oneFIO = new List<string>();
+                oneFIO.Add(reader[0].ToString().Trim());
+                oneFIO.Add(reader[1].ToString().Trim());
+                oneFIO.Add(reader[2].ToString().Trim());
+                oneFIO.Add(reader[3].ToString().Trim());
+                oneFIO.Add(reader[4].ToString().Trim());
+                oneFIO.Add(reader[5].ToString().Trim());
+                allFioDate.Add(oneFIO);
+            }
+            reader.Close();
+            return allFioDate;
+        }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = Win_closing;//Проверка на возможность закрытия основной формы(меняется в других окнах)

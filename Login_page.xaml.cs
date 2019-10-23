@@ -82,7 +82,7 @@ namespace Questionnaire
         {
             MainWindow mW = (MainWindow)Application.Current.MainWindow;
             var index =_schoolBox.SelectedIndex + 1;//индекс выбранной школы
-            Klasses klasses = mW.LoadKlases();
+            klasses = mW.LoadKlases();
             List<Klass> kl = klasses.Where(k => k.Id_School == index).ToList();//выбор класов у которых id школы соответствует выбранной школе
             _classBox.ItemsSource = kl;
         }
@@ -121,7 +121,8 @@ namespace Questionnaire
             else if(String_check(_input.Text))//если все заполненные данные верны и строка ФИО написанна правильно
             {
                 mW.Win_closing = true;
-                mW.Insert_Person(String_Helper(_input.Text), _schoolBox.SelectedIndex + 1, _classBox.SelectedIndex + 1);//передает введенные данные в команду для вставки в бд
+                List<Klass> klassId = klasses.Where(x => x.Id_School == (_schoolBox.SelectedIndex + 1)).ToList();
+                mW.Insert_Person(String_Helper(_input.Text), _schoolBox.SelectedIndex + 1, klassId[_classBox.SelectedIndex].Id );//передает введенные данные в команду для вставки в бд
                 mW.question_Page.Visibility = Visibility.Visible;//показывается страница с вопросами
                 exit = false;
                 this.Close();//это окно закрывается

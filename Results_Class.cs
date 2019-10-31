@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,14 +26,21 @@ namespace Questionnaire
         {
             Id_Result = id; Id_Answer = id_Answer; Result1 = result1; Result2 = result2; Result3 = result3; ;
         }
+        public Results_Class(int id_Answer, string result1)
+        {
+            Id_Answer = id_Answer; Result1 = result1;
+        }
+
         public Results_Class( int id_Answer, string result1, string result2, string result3)
         {
-            Id_Answer = id_Answer; Result1 = result1; Result2 = result2; Result3 = result3; ;
+            Id_Answer = id_Answer; Result1 = result1; Result2 = result2; Result3 = result3; 
         }
         public Results_Class(int id, int id_Answer, string result1, string result2, string result3, string result4,string result5)
         {
             Id_Result = id; Id_Answer = id_Answer; Result1 = result1; Result2 = result2; Result3 = result3; Result4 = result4;Result5 = result5; 
         }
+
+       
     }
 
     public class Named_Results :Results_Class
@@ -44,10 +52,15 @@ namespace Questionnaire
         public DateTime Date { get; set; }
         public int TestNumber { get; set; }
 
-        public Named_Results(int id, string fio, string school_Number, string klass_Name,DateTime date,int testNumber, Results_Class results_Class)
+        public Named_Results()
+        { }
+
+        public Named_Results( string fio, string school_Number, string klass_Name, DateTime date, int testNumber, Results_Class results_Class)
         {
-            Id = id; FIO = fio; School_Number = school_Number; Klass_Name = klass_Name; this.Id_Answer = results_Class.Id_Answer; Date = date; TestNumber = testNumber; this.Result1 = results_Class.Result1; this.Result2 = results_Class.Result2; this.Result3 = results_Class.Result3; this.Result4 = results_Class.Result4;this.Result5 = results_Class.Result5;
+             FIO = fio; School_Number = school_Number; Klass_Name = klass_Name; this.Id_Answer = results_Class.Id_Answer; Date = date; TestNumber = testNumber; this.Result1 = results_Class.Result1; this.Result2 = results_Class.Result2; this.Result3 = results_Class.Result3; this.Result4 = results_Class.Result4; this.Result5 = results_Class.Result5;
         }
+
+        
     }
 
     

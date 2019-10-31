@@ -13,12 +13,13 @@
             <Setter Property="Control.VerticalAlignment" Value="Center"/>
             <Setter Property="Control.Width" Value="120"/>
             <Setter Property="Control.Height" Value="75"/>
+            <Setter Property="Control.Visibility" Value="Hidden"/>
         </Style>
 
         
         <Style x:Key="lab" >
             <Setter Property="Control.FontSize" Value="20"/>
-            <Setter Property="Control.BorderBrush" Value="Red"/>
+            <Setter Property="Control.BorderBrush" Value="AntiqueWhite"/>
             <Setter Property="Control.BorderThickness" Value="10"/>
             <Setter Property="Control.Margin" Value="0,40,0,0"/>
             

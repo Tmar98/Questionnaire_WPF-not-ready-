@@ -26,10 +26,16 @@ namespace Questionnaire
             InitializeComponent();
         }
 
+        private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            MainWindow mW = (MainWindow)Application.Current.MainWindow;
+            mW.Win_closing = false;
+        }
+
         private void Butt_Test4_Click(object sender, RoutedEventArgs e)
         {
             MainWindow mW = (MainWindow)Application.Current.MainWindow;
-            mW.question_Page.Nomer_Testa(1);
+            mW.question_Page.AddNomer_Testa(4);//переписать 1 на 4
             Login_page login_Page = new Login_page();
             login_Page.Owner = mW;
             login_Page.Show();
@@ -37,10 +43,17 @@ namespace Questionnaire
             mW.Win_closing = true;
         }
 
-        private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+       
+
+        private void Butt_Test1_Click(object sender, RoutedEventArgs e)
         {
             MainWindow mW = (MainWindow)Application.Current.MainWindow;
-            mW.Win_closing = false;
+            mW.question_Page.AddNomer_Testa(1);
+            Login_page login_Page = new Login_page();
+            login_Page.Owner = mW;
+            login_Page.Show();
+            mW.Butt_Menu.Visibility = Visibility.Hidden;
+            mW.Win_closing = true;
         }
     }
 }

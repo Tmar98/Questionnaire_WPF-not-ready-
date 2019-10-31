@@ -94,12 +94,32 @@ namespace Questionnaire
             return klasses;
         }
 
+
         #region Считывание вопросов тестов из бд
+
         /// <summary>
-        /// Считование вопросов первого теста из бд
+        /// Считование вопросов первого теста Бека из бд
         /// </summary>
         /// <returns></returns>
         public Queue<string> Test1_Questions()
+        {
+            var commandread = new SqlCommand("select Question from Bek_Scale", connection);//строка выборки из бд
+            var reader = commandread.ExecuteReader();
+            Queue<string> queue_Questions = new Queue<string>();//создаю очередь из строк
+            while (reader.Read())
+            {
+                queue_Questions.Enqueue(reader["Question"].ToString());//в очередь записываю вопросы теста
+            }
+            reader.Close();
+            
+            return queue_Questions;
+        }
+
+        /// <summary>
+        /// Считование вопросов четвертого теста ЕГЭ из бд
+        /// </summary>
+        /// <returns></returns>
+        public Queue<string> Test4_Questions()
         {
             var commandread = new SqlCommand("select Question_Text from EGE_Questions", connection);//строка выборки из бд
             var reader = commandread.ExecuteReader();
@@ -109,9 +129,10 @@ namespace Questionnaire
                 queue_Questions.Enqueue(reader["Question_Text"].ToString());//в очередь записываю вопросы теста
             }
             reader.Close();
-            
+
             return queue_Questions;
         }
+
         #endregion
 
 
@@ -246,107 +267,135 @@ namespace Questionnaire
         public List<Answers_Data> Select_Answers(string selectString)
         {
             var command_Answers = new SqlCommand(selectString, connection);
-            var reader_Answers = command_Answers.ExecuteReader();
+            var reader_Answers = command_Answers.ExecuteReader();//получаю данные из бд
 
-            List<Answers_Data> Answers = new List<Answers_Data>();
+            List<Answers_Data> Answers = new List<Answers_Data>();//list элементом которого служит класс для хранения ответов
 
-            Answers_Data answers_Data = new Answers_Data();
+            Answers_Data answers_Data = new Answers_Data(); //класс для хранения ответов
 
-            while(reader_Answers.Read())
+            while (reader_Answers.Read())//пока мы можем читать данные мы будим их добовлять в класс
             {
-                answers_Data = new Answers_Data(Convert.ToInt32(reader_Answers[0]), Convert.ToInt32(reader_Answers[1]), Convert.ToInt32(reader_Answers[2]), Convert.ToDateTime(reader_Answers[3]), Convert.ToInt32(reader_Answers[5]), Convert.ToInt32(reader_Answers[6]), Convert.ToInt32(reader_Answers[7]), Convert.ToInt32(reader_Answers[8]), Convert.ToInt32(reader_Answers[9]), Convert.ToInt32(reader_Answers[10]), Convert.ToInt32(reader_Answers[11]), Convert.ToInt32(reader_Answers[12]), Convert.ToInt32(reader_Answers[13]), Convert.ToInt32(reader_Answers[14]), Convert.ToInt32(reader_Answers[15]), Convert.ToInt32(reader_Answers[16]), Convert.ToInt32(reader_Answers[17]), Convert.ToInt32(reader_Answers[18]), Convert.ToInt32(reader_Answers[19]));
-                Answers.Add(answers_Data);
+                switch (Convert.ToInt32(reader_Answers[2]))//для каждого теста отличается количество ответов//будет дополненно еще 2 тестами
+                {
+
+                    case 1://Тест Бека
+                        {
+                            answers_Data = new Answers_Data(Convert.ToInt32(reader_Answers[0]), Convert.ToInt32(reader_Answers[1]), Convert.ToInt32(reader_Answers[2]), Convert.ToDateTime(reader_Answers[3]), Convert.ToInt32(reader_Answers[5]), Convert.ToInt32(reader_Answers[6]), Convert.ToInt32(reader_Answers[7]), Convert.ToInt32(reader_Answers[8]), Convert.ToInt32(reader_Answers[9]), Convert.ToInt32(reader_Answers[10]), Convert.ToInt32(reader_Answers[11]), Convert.ToInt32(reader_Answers[12]), Convert.ToInt32(reader_Answers[13]), Convert.ToInt32(reader_Answers[14]), Convert.ToInt32(reader_Answers[15]), Convert.ToInt32(reader_Answers[16]), Convert.ToInt32(reader_Answers[17]), Convert.ToInt32(reader_Answers[18]), Convert.ToInt32(reader_Answers[19]), Convert.ToInt32(reader_Answers[20]), Convert.ToInt32(reader_Answers[21]), Convert.ToInt32(reader_Answers[22]), Convert.ToInt32(reader_Answers[23]), Convert.ToInt32(reader_Answers[24]));
+                            Answers.Add(answers_Data);
+                        }
+                        break;
+                    case 4://Тест Еге
+                        {
+                            answers_Data = new Answers_Data(Convert.ToInt32(reader_Answers[0]), Convert.ToInt32(reader_Answers[1]), Convert.ToInt32(reader_Answers[2]), Convert.ToDateTime(reader_Answers[3]), Convert.ToInt32(reader_Answers[5]), Convert.ToInt32(reader_Answers[6]), Convert.ToInt32(reader_Answers[7]), Convert.ToInt32(reader_Answers[8]), Convert.ToInt32(reader_Answers[9]), Convert.ToInt32(reader_Answers[10]), Convert.ToInt32(reader_Answers[11]), Convert.ToInt32(reader_Answers[12]), Convert.ToInt32(reader_Answers[13]), Convert.ToInt32(reader_Answers[14]), Convert.ToInt32(reader_Answers[15]), Convert.ToInt32(reader_Answers[16]), Convert.ToInt32(reader_Answers[17]), Convert.ToInt32(reader_Answers[18]), Convert.ToInt32(reader_Answers[19]));
+                            Answers.Add(answers_Data);
+                        }
+                        break;
+                    
+                }
             }
             
-            reader_Answers.Close();
+            reader_Answers.Close();//закрываем поток
 
             return Answers;
         }
+
 
         /// <summary>
         /// Считываем ответы на данные детей без ответов из бд
         /// </summary>
         /// <param name="selectString">строка выбора из бд</param>
         /// <returns></returns>
-        public List<List<string>> SelectChildrensWithoutAnswers(string selectString)
+        public List<FioDate> SelectChildrensWithoutAnswers(string selectString)
         {
 
             var command_Data = new SqlCommand(selectString, connection);
-            var allFioDate = FioDate(command_Data.ExecuteReader());
-            
+            var reader = command_Data.ExecuteReader();//считываю данные из бд (данные о ребенке (фио, школа, класс,дата прохождения теста,id ответов в бд))
+
+            List<FioDate> allFioDate = new List<FioDate>();//list элементами которого является класс для хранения информации о ребенке и даты прохождения теста
+            while (reader.Read())//читаем данные
+            {
+                FioDate fioDate = new FioDate(reader[0].ToString().Trim(), reader[1].ToString().Trim(), reader[2].ToString().Trim(), Convert.ToDateTime(reader[3]), Convert.ToInt32(reader[4]), Convert.ToInt32(reader[5]));//собираем класс
+
+                allFioDate.Add(fioDate);//добавляем класс в list
+            }
+            reader.Close();//закрываем считывание
             return allFioDate;
         }
 
+
+        /// <summary>
+        /// Считываем готовые результаты из бд для тех у кого уже есть результаты
+        /// </summary>
+        /// <param name="selectString"> строка выборки из бд</param>
+        /// <returns></returns>
         public List<Results_Class> Select_Results(string selectString)
         {
             var command_Results = new SqlCommand(selectString, connection);
-            var reader_Results = command_Results.ExecuteReader();
-            List<Results_Class> listResults = new List<Results_Class>();
-            while(reader_Results.Read())
+            var reader_Results = command_Results.ExecuteReader();//считываем данные из бд
+            List<Results_Class> listResults = new List<Results_Class>();//list элементами которого является класс с результатами
+            while(reader_Results.Read())//читаем данные
             {
-                Results_Class results_Class = new Results_Class(Convert.ToInt32( reader_Results[0]),Convert.ToInt32( reader_Results[1]), reader_Results[2].ToString(), reader_Results[3].ToString(), reader_Results[4].ToString(), reader_Results[5].ToString(), reader_Results[6].ToString());
-                listResults.Add(results_Class);
+                Results_Class results_Class = new Results_Class(Convert.ToInt32( reader_Results[0]),Convert.ToInt32( reader_Results[1]), reader_Results[2].ToString(), reader_Results[3].ToString(), reader_Results[4].ToString(), reader_Results[5].ToString(), reader_Results[6].ToString());//собираем класс
+                listResults.Add(results_Class);//добавляем класс в list
             }
             reader_Results.Close();
             return listResults;
         }
-        public  void Insert_Results(List<Results_Class> results_Classes,List<int> testNumber)//запись результатов в бд
+
+
+        /// <summary>
+        /// Записываем в бд обработанные результаты
+        /// </summary>
+        /// <param name="insert_String"> строка inserta в бд</param>
+        /// <param name="results_Classes"> list класса с результатами для функции обновления данных от том что результаты обработанны</param>
+        public  void Insert_Results(string insert_String,List<Results_Class> results_Classes)//запись результатов в бд
         {
-            var insert_String = "INSERT INTO Results_Table (Id_Answer, Result1,Result2,Result3) VALUES ";// (@id_Answer,@result1,@result2,@result3)";
-            var i = 0;
-            foreach (Results_Class t in results_Classes)
-            {
-                switch (testNumber[i])
-                {
-                    case 1:
-                        {
-                            insert_String += " ( " + t.Id_Answer.ToString() + ", '" + t.Result1.ToString() + "' ,'" + t.Result2.ToString() + "' ,'" + t.Result3.ToString() + "'),";
-                            i++;
-                        }
-                        break;
-
-                }
-
-            }
-
-            insert_String= insert_String.Substring(0,insert_String.Length - 1);
-            var insert_CommandAnswers = new SqlCommand(insert_String, connection);//строка запроса к бд
-            insert_CommandAnswers.ExecuteNonQuery();
+            
+            var insert_CommandResultsEge = new SqlCommand(insert_String, connection);//строка запроса к бд
+            insert_CommandResultsEge.ExecuteNonQuery();//записываем результаты в бд
 
             Update_Info(results_Classes);
         }
 
-        private void Update_Info(List<Results_Class> results_Classes)//изменяем данные и пишем номер теста в поле  
+
+        /// <summary>
+        /// функция обновления данных от том что результаты обработанны
+        /// </summary>
+        /// <param name="results_Classes">list с результатами</param>
+        private void Update_Info(List<Results_Class> results_Classes)  
         {
-            var update_String = " UPDATE Questionnaire_Answers SET Test_Result_Id = CASE Id ";
-            foreach (Results_Class t in results_Classes)
+            var selectString = "select Id_Answer,Id from Results_Table Where";//строка выбора из бд
+            foreach (Results_Class r in results_Classes)    //выбираем все id для каждого результата(бд сама их выдает)
+            {
+                selectString += " Id_Answer=" + r.Id_Answer + " or ";
+            }
+            selectString = selectString.Substring(0, selectString.Length - 3);//обрезаем строку выбора на (or_) для правильного выбора
+
+            var command_ResId = new SqlCommand(selectString, connection);//считываем ID который получил только что записанный результат
+            var reader_Id = command_ResId.ExecuteReader();
+
+                foreach(Results_Class r in results_Classes)//изменяем информацию в классе
+                {
+                    if(reader_Id.Read())
+                        if (r.Id_Answer == Convert.ToInt32(reader_Id[0]))
+                            r.Id_Result = Convert.ToInt32(reader_Id[1]);//дописываем id строки результата из бд
+                }
+
+
+            reader_Id.Close();
+
+
+            var update_String = " UPDATE Questionnaire_Answers SET Test_Result_Id = CASE Id ";//строка обновления информации
+            foreach (Results_Class t in results_Classes)//собираем строку обновления
             {
                 update_String+=" WHEN "+t.Id_Answer+" THEN "+t.Id_Result+" ";
             }
             update_String += " ELSE Test_Result_Id END";
             var update_Command = new SqlCommand(update_String, connection);
-            update_Command.ExecuteNonQuery();
+            update_Command.ExecuteNonQuery();//обновляем информацию о том что для данных ответов на тесты был получен результат
         }
 
 
-        private List<List<string>> FioDate (SqlDataReader reader)
-        {
-            
-            List<List<string>> allFioDate = new List<List<string>>();
-            while( reader.Read())
-            {
-                List<string> oneFIO = new List<string>();
-                oneFIO.Add(reader[0].ToString().Trim());
-                oneFIO.Add(reader[1].ToString().Trim());
-                oneFIO.Add(reader[2].ToString().Trim());
-                oneFIO.Add(reader[3].ToString().Trim());
-                oneFIO.Add(reader[4].ToString().Trim());
-                oneFIO.Add(reader[5].ToString().Trim());
-                allFioDate.Add(oneFIO);
-            }
-            reader.Close();
-            return allFioDate;
-        }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = Win_closing;//Проверка на возможность закрытия основной формы(меняется в других окнах)
@@ -355,5 +404,24 @@ namespace Questionnaire
         }
 
 
+    }
+}
+
+public class FioDate //класс для хранения информациии о ребенке
+{
+    public string FIO {get;set;}
+    public string SchoolNumber { get; set; }
+    public string Klass_Name { get; set; }
+    public DateTime Date { get; set; }
+    public int TestNumber { get; set; }
+    public int AnswerId { get; set; }
+
+
+    public FioDate()
+    { }
+
+    public FioDate(string fio,string schoolNumber,string klassName,DateTime date,int testNumber,int answerId)
+    {
+        FIO = fio;SchoolNumber = schoolNumber;Klass_Name = klassName;Date = date;TestNumber = testNumber;AnswerId = answerId;
     }
 }

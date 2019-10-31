@@ -58,9 +58,15 @@ namespace Questionnaire
         {
 
         }
+
         public Answers_Data(int id,int id_Children,int test_Number,DateTime date,int question1, int question2, int question3, int question4, int question5, int question6, int question7, int question8, int question9, int question10, int question11, int question12, int question13, int question14, int question15)
         {
             Id = id;Id_Children = id_Children;Test_Number = test_Number;Date = date;Question1 = question1; Question2 = question2;Question3 = question3;Question4 = question4;Question5 = question5;Question6 = question6;Question7 = question7;Question8 = question8;Question9 = question9;Question10 = question10;Question11 = question11;Question12 = question12;Question13 = question13;Question14 = question14;Question15 = question15;
+        }
+
+        public Answers_Data(int id,int id_Children,int test_Number,DateTime date,int question1, int question2, int question3, int question4, int question5, int question6, int question7, int question8, int question9, int question10, int question11, int question12, int question13, int question14, int question15, int question16, int question17, int question18, int question19, int question20)
+        {
+            Id = id;Id_Children = id_Children;Test_Number = test_Number;Date = date;Question1 = question1; Question2 = question2;Question3 = question3;Question4 = question4;Question5 = question5;Question6 = question6;Question7 = question7;Question8 = question8;Question9 = question9;Question10 = question10;Question11 = question11;Question12 = question12;Question13 = question13;Question14 = question14;Question15 = question15; Question16 = question16; Question17 = question17; Question18 = question18; Question19 = question19; Question20 = question20;
         }
     }
 }

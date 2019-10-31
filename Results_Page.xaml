@@ -6,13 +6,29 @@
              xmlns:local="clr-namespace:Questionnaire"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" IsVisibleChanged="UserControl_IsVisibleChanged">
+    <UserControl.Resources>
+        <Style x:Key="baze">
+            <Setter Property="Control.Width" Value=" auto"/>
+            <Setter Property="Control.MaxWidth" Value="200"/>
+            <Setter Property="Control.MinWidth" Value="100"/>
+            <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+            <Setter Property="TextBlock.Padding" Value="2"/>
+        </Style>
+
+        <Style x:Key="bazeLeft" BasedOn="{StaticResource ResourceKey= baze}">
+            <Setter Property="TextBlock.Padding" Value="2,2,10,2"/>
+            
+
+        </Style>
+    </UserControl.Resources>
+    
     
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.3*"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        
+
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -23,9 +39,9 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            
+
             <ComboBox x:Name="_selectionType"  HorizontalAlignment="Center" VerticalAlignment="Center" Width="120"  SelectionChanged="_selectionType_SelectionChanged" >
-                <TextBlock>ФИО</TextBlock> 
+                <TextBlock>ФИО</TextBlock>
                 <TextBlock>Школа</TextBlock>
                 <TextBlock>Класс</TextBlock>
                 <TextBlock>Дата</TextBlock>
@@ -41,14 +57,15 @@
                 <TextBlock TextWrapping="Wrap">Выбрать школу</TextBlock>
             </Button>
             <Button x:Name="button" Grid.Column="2" Grid.Row="1" Content="Показать" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" Click="Button_Click"/>
+            <Button x:Name="button2" Content="Button" Grid.Column="2" HorizontalAlignment="Left" Margin="182,37,0,0" VerticalAlignment="Top" Width="75" Grid.RowSpan="2"/>
         </Grid>
-        <DataGrid x:Name="dataGrid" Grid.Row="1" HorizontalAlignment="Center"  IsReadOnly="True"  VerticalAlignment="Center" Width="780" Height="320"  >
+        <DataGrid x:Name="dataGrid" Grid.Row="1"   IsReadOnly="True" Margin="10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="id" Binding="{Binding Id}" ></DataGridTextColumn>
-                <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}"></DataGridTextColumn>
-                <DataGridTextColumn Header="Школа №" Binding="{Binding School_Number}"></DataGridTextColumn>
-                <DataGridTextColumn Header="Класс номер" Binding="{Binding Klass_Name}"></DataGridTextColumn>
-                <DataGridTextColumn Header="Дата" Binding="{Binding Date}"></DataGridTextColumn>
+                <DataGridTextColumn Header="id" Binding="{Binding Id}" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn Header="Школа №" Binding="{Binding School_Number}" Width="*"></DataGridTextColumn>
+                <DataGridTextColumn Header="Класс номер" Binding="{Binding Klass_Name}" Width="*"></DataGridTextColumn>
+                <DataGridTextColumn Header="Дата" Binding="{Binding Date}" Width="*" MinWidth="130"></DataGridTextColumn>
             </DataGrid.Columns>
 
         </DataGrid>

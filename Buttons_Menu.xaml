@@ -33,7 +33,7 @@
             <Label x:Name="label" Content="Выберите тест" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" Width="208"/>
         </Border>
         
-        <Button x:Name="butt_Test1" Grid.Row="1" Content="Шкала безнадежности Бека" />
+        <Button x:Name="butt_Test1" Grid.Row="1" Content="Шкала безнадежности Бека" Click="Butt_Test1_Click" />
         <Button x:Name="butt_Test2" Grid.Row="1" Grid.Column="1" Content="Шкала Астенического Состояния" />
         <Button x:Name="butt_Test3" Grid.Row="2" Content="Тип мышления" />
         <Button x:Name="butt_Test4" Grid.Row="2" Grid.Column="1" Click="Butt_Test4_Click" >
